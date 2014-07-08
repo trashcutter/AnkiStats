@@ -8,15 +8,28 @@ android {
         applicationId "com.wildplot.android.ankistats"
         minSdkVersion 16
         targetSdkVersion 16
-        versionCode 1
-        versionName "1.0"
+        versionCode 10000012
+        versionName "0.1.2"
+    }
+    signingConfigs {
+        release {
+            def propsFile = rootProject.file('keystore.properties')
+            def props = new Properties()
+            props.load(new FileInputStream(propsFile))
+            storeFile file(props['storeFile'])
+            storePassword props['storePassword']
+            keyAlias props['keyAlias']
+            keyPassword props['keyPassword']
+        }
     }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {

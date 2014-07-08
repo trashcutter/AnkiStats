@@ -94,6 +94,13 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         ((AnkiStatsApplication)getApplication()).setmStandardTextSize(size);
     }
 
+    public ViewPager getViewPager(){
+        return mViewPager;
+    }
+
+    public SectionsPagerAdapter getSectionsPagerAdapter() {
+        return mSectionsPagerAdapter;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -145,6 +152,15 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         }
 
         @Override
+        public int getItemPosition(Object object) {
+            if (object instanceof ChartFragment) {
+                ((ChartFragment) object).checkAndUpdate();
+            }
+            //don't return POSITION_NONE, avoid fragment recreation.
+            return super.getItemPosition(object);
+        }
+
+        @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
@@ -189,6 +205,8 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         private Menu mMenu;
         private int mType  = Utils.TYPE_MONTH;
         private boolean mIsCreated = false;
+        private ViewPager mActivityPager;
+        private SectionsPagerAdapter mActivitySectionPagerAdapter;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -222,6 +240,8 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
             mInstance = this;
             mType = ((AnkiStatsApplication) getActivity().getApplication()).getStatType();
             mIsCreated = true;
+            mActivityPager = ((AnkiStatsActivity)getActivity()).getViewPager();
+            mActivitySectionPagerAdapter = ((AnkiStatsActivity)getActivity()).getSectionsPagerAdapter();
             return rootView;
         }
 
@@ -284,7 +304,9 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                     monthItem.setChecked(true);
                     yearItem.setChecked(false);
                     allItem.setChecked(false);
-                    createChart();
+                    mActivitySectionPagerAdapter.notifyDataSetChanged();
+                    //createChart();
+                    //mActivityPager.invalidate();
                 }
 
             } else if(id == R.id.action_year) {
@@ -293,7 +315,9 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                     monthItem.setChecked(false);
                     yearItem.setChecked(true);
                     allItem.setChecked(false);
-                    createChart();
+                    mActivitySectionPagerAdapter.notifyDataSetChanged();
+                    //createChart();
+                    //mActivityPager.invalidate();
                 }
             } else if(id == R.id.action_life_time) {
                 if(ankiStatsApplication.getStatType() != Utils.TYPE_LIFE){
@@ -301,7 +325,9 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                     monthItem.setChecked(false);
                     yearItem.setChecked(false);
                     allItem.setChecked(true);
-                    createChart();
+                    mActivitySectionPagerAdapter.notifyDataSetChanged();
+                    //createChart();
+                    //mActivityPager.invalidate();
                 }
             }
             return true;

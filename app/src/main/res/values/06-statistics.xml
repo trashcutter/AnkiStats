@@ -36,6 +36,7 @@
     <string name="stats_answers">Answers</string>
     <string name="stats_minutes">Minutes</string>
     <string name="stats_hours">Hours</string>
+    <string name="stats_percentage">Percentage</string>
     <string name="stats_period_month">1 month</string>
     <string name="stats_period_year">1 year</string>
     <string name="stats_period_lifetime">all</string>
@@ -121,6 +122,7 @@
     <string name="stats_forecast">Forecast</string>
     <string name="stats_review_count">Review count</string>
     <string name="stats_review_time">Review time</string>
+    <string name="stats_review_intervals">Intervals</string>
 
     <string-array name="stats_period">
         <item>1 month</item>

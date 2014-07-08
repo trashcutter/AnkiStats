@@ -32,7 +32,7 @@ import java.util.ArrayList;
 /**
  * Created by mig on 06.07.2014.
  */
-public class ReviewCount {
+public class Intervals {
     private AnkiDb mAnkiDb;
     private ImageView mImageView;
     private CollectionData mCollectionData;
@@ -55,14 +55,14 @@ public class ReviewCount {
     private boolean mFoundRelearnCards;
     private double barThickness = 0.6;
 
-    public ReviewCount(AnkiDb ankiDb, ImageView imageView, CollectionData collectionData){
+    public Intervals(AnkiDb ankiDb, ImageView imageView, CollectionData collectionData){
         mAnkiDb = ankiDb;
         mImageView = imageView;
         mCollectionData = collectionData;
     }
 
-    public Bitmap renderChart(int type, boolean reps){
-        calculateDone(type, reps);
+    public Bitmap renderChart(int type){
+        calculateIntervals(type);
         int height = mImageView.getMeasuredHeight();
         int width = mImageView.getMeasuredWidth();
 
@@ -179,87 +179,52 @@ public class ReviewCount {
         return bufferedFrameImage.getBitmap();
     }
 
-    public boolean calculateDone(int type, boolean reps) {
+    public boolean calculateIntervals(int type) {
         mType = type;
         mBackwards = true;
-        if (reps) {
-            mTitle = R.string.stats_review_count;
-            mAxisTitles = new int[] { type, R.string.stats_answers, R.string.stats_cumulative_answers };
-        } else {
-            mTitle = R.string.stats_review_time;
-        }
-        mValueLabels = new int[] { R.string.statistics_learn, R.string.statistics_relearn, R.string.statistics_young,
-                R.string.statistics_mature, R.string.statistics_cram };
-        mColors = new int[] { R.color.stats_learn, R.color.stats_relearn, R.color.stats_young, R.color.stats_mature,
-                R.color.stats_cram };
+
+        mTitle = R.string.stats_review_intervals;
+        mAxisTitles = new int[] { type, R.string.stats_cards, R.string.stats_percentage };
+
+        mValueLabels = new int[] { R.string.stats_cards};
+        mColors = new int[] { R.color.stats_interval};
         int num = 0;
         int chunk = 0;
+        String lim = "";
         switch (type) {
             case Utils.TYPE_MONTH:
                 num = 31;
                 chunk = 1;
+                lim = " and grp <= 30";
                 break;
             case Utils.TYPE_YEAR:
                 num = 52;
                 chunk = 7;
+                lim = " and grp <= 52";
                 break;
             case Utils.TYPE_LIFE:
                 num = -1;
                 chunk = 30;
+                lim = "";
                 break;
         }
         ArrayList<String> lims = new ArrayList<String>();
         if (num != -1) {
             lims.add("id > " + ((mCollectionData.getDayCutoff() - ((num + 1) * chunk * 86400)) * 1000));
         }
-        String lim = _revlogLimitWholeOnly().replaceAll("[\\[\\]]", "");
-        if (lim.length() > 0) {
-            lims.add(lim);
-        }
-        if (lims.size() > 0) {
-            lim = "WHERE ";
-            while (lims.size() > 1) {
-                lim += lims.remove(0) + " AND ";
-            }
-            lim += lims.remove(0);
-        } else {
-            lim = "";
-        }
-        String ti;
-        String tf;
-        if (!reps) {
-            ti = "time/1000";
-            if (mType == 0) {
-                tf = "/60.0"; // minutes
-                mAxisTitles = new int[] { type, R.string.stats_minutes, R.string.stats_cumulative_time_minutes };
-            } else {
-                tf = "/3600.0"; // hours
-                mAxisTitles = new int[] { type, R.string.stats_hours, R.string.stats_cumulative_time_hours };
-            }
-        } else {
-            ti = "1";
-            tf = "";
-        }
+
         ArrayList<double[]> list = new ArrayList<double[]>();
         Cursor cur = null;
         try {
             cur = mAnkiDb
                     .getDatabase()
                     .rawQuery(
-                            "SELECT (cast((id/1000 - " + mCollectionData.getDayCutoff() + ") / 86400.0 AS INT))/"
-                                    + chunk + " AS day, " + "sum(CASE WHEN type = 0 THEN " + ti + " ELSE 0 END)"
-                                    + tf
-                                    + ", " // lrn
-                                    + "sum(CASE WHEN type = 1 AND lastIvl < 21 THEN " + ti + " ELSE 0 END)" + tf
-                                    + ", " // yng
-                                    + "sum(CASE WHEN type = 1 AND lastIvl >= 21 THEN " + ti + " ELSE 0 END)" + tf
-                                    + ", " // mtr
-                                    + "sum(CASE WHEN type = 2 THEN " + ti + " ELSE 0 END)" + tf + ", " // lapse
-                                    + "sum(CASE WHEN type = 3 THEN " + ti + " ELSE 0 END)" + tf // cram
-                                    + " FROM revlog " + lim + " GROUP BY day ORDER BY day", null);
+                            "select ivl / :chunk as grp, count() from cards " +
+                                    "where did in "+ _limitWholeOnly() +" and queue = 2 " + lim + " " +
+                                    "group by grp " +
+                                    "order by grp", null);
             while (cur.moveToNext()) {
-                list.add(new double[] { cur.getDouble(0), cur.getDouble(1), cur.getDouble(4), cur.getDouble(2),
-                        cur.getDouble(3), cur.getDouble(5) });
+                list.add(new double[] { cur.getDouble(0), cur.getDouble(1) });
             }
         } finally {
             if (cur != null && !cur.isClosed()) {
@@ -268,35 +233,25 @@ public class ReviewCount {
         }
 
         // small adjustment for a proper chartbuilding with achartengine
-        if (type != Utils.TYPE_LIFE && (list.size() == 0 || list.get(0)[0] > -num)) {
-            list.add(0, new double[] { -num, 0, 0, 0, 0, 0 });
-        } else if (type == Utils.TYPE_LIFE && list.size() == 0) {
-            list.add(0, new double[] { -12, 0, 0, 0, 0, 0 });
+        if (list.size() == 0 || list.get(0)[0] > 0) {
+            list.add(0, new double[] { 0, 0, 0 });
         }
-        if (list.get(list.size() - 1)[0] < 0) {
-            list.add(new double[] { 0, 0, 0, 0, 0, 0 });
+        if (num == -1 && list.size() < 2) {
+            num = 31;
+        }
+        if (type != Utils.TYPE_LIFE && list.get(list.size() - 1)[0] < num) {
+            list.add(new double[] { num, 0 });
+        } else if (type == Utils.TYPE_LIFE && list.size() < 2) {
+            list.add(new double[] { Math.max(12, list.get(list.size() - 1)[0] + 1), 0 });
         }
 
-        mSeriesList = new double[6][list.size()];
+        mSeriesList = new double[2][list.size()];
         for (int i = 0; i < list.size(); i++) {
             double[] data = list.get(i);
-            mSeriesList[0][i] = data[0]; // day
-            mSeriesList[1][i] = data[1] + data[2] + data[3] + data[4] + data[5]; // lrn
-            mSeriesList[2][i] = data[2] + data[3] + data[4] + data[5]; // relearn
-            mSeriesList[3][i] = data[3] + data[4] + data[5]; // young
-            mSeriesList[4][i] = data[4] + data[5]; // mature
-            mSeriesList[5][i] = data[5]; // cram
+            mSeriesList[0][i] = data[0]; // grp
+            mSeriesList[1][i] = data[1]; // cnt
             if(mSeriesList[1][i] > mMaxCards)
-                mMaxCards = (int) Math.round(data[1] + data[2] + data[3] + data[4] + data[5]);
-
-            if(data[5] >= 0.999)
-                mFoundCramCards = true;
-
-            if(data[1] >= 0.999)
-                mFoundLearnCards = true;
-
-            if(data[2] >= 0.999)
-                mFoundRelearnCards = true;
+                mMaxCards = (int) Math.round(data[1]);
         }
         mMaxElements = list.size()-1;
         return list.size() > 0;
