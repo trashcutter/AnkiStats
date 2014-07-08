@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AnkiStats</string>
+    <string name="title_section1">Forecast</string>
+    <string name="title_section2">Review Count</string>
+    <string name="title_section3">Review Time</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
