@@ -54,6 +54,9 @@ public class Intervals {
     private double[][] mSeriesList;
     private boolean mFoundRelearnCards;
     private double barThickness = 0.6;
+    private String mAverage;
+    private String mLongest;
+    private double[][] mCumulative;
 
     public Intervals(AnkiDb ankiDb, ImageView imageView, CollectionData collectionData){
         mAnkiDb = ankiDb;
@@ -100,9 +103,8 @@ public class Intervals {
         yaxis.setName(mImageView.getResources().getString(mAxisTitles[1]));
         yaxis.setOnFrame();
 
-        double maxCumulative = 0;
+
         BarGraph[] barGraphs = new BarGraph[mSeriesList.length-1];
-        double[][][] cumulatives = new double[mSeriesList.length-1][][];
         for(int i = 1; i< mSeriesList.length; i++){
             double[][] bars = new double[2][];
             bars[0] = mSeriesList[0];
@@ -113,39 +115,18 @@ public class Intervals {
             barGraphs[i-1].setName(mImageView.getResources().getString(mValueLabels[i-1]));
             //barGraph.setFillColor(Color.GREEN.darker());
             barGraphs[i-1].setFillColor(new Color(mImageView.getResources().getColor(mColors[i-1])));
-
-            cumulatives[i-1] = Utils.createCumulative(bars);
-            if(i > 1){
-                for(int j = 0; j< cumulatives[i-2][1].length; j++){
-                    cumulatives[i-2][1][j] -= cumulatives[i-1][1][j];
-                }
-
-                if(maxCumulative < cumulatives[i-2][1][cumulatives[i-2][1].length-1]){
-                    maxCumulative = cumulatives[i-2][1][cumulatives[i-2][1].length-1];
-                }
-            }
-            if(i == mSeriesList.length -1) {
-                if (maxCumulative < cumulatives[i - 1][1][cumulatives[i - 1][1].length - 1]) {
-                    maxCumulative = cumulatives[i - 1][1][cumulatives[i - 1][1].length - 1];
-                }
-            }
-
-
         }
 
-        PlotSheet hiddenPlotSheet = new PlotSheet(mSeriesList[0][0]-0.5, mSeriesList[0][mSeriesList[0].length-1] + 0.5, 0, maxCumulative*1.1);     //for second y-axis
+        //double maxCumulative = mCumulative[1][mCumulative[1].length-1];
+        PlotSheet hiddenPlotSheet = new PlotSheet(mSeriesList[0][0]-0.5, mSeriesList[0][mSeriesList[0].length-1] + 0.5, 0, 105.0);     //for second y-axis
         hiddenPlotSheet.setFrameThickness(mFrameThickness);
 
-        Lines[] lineses = new Lines[mSeriesList.length-1];
-        for(int i = 1; i< mSeriesList.length; i++){
-            lineses[i-1] = new Lines(hiddenPlotSheet,cumulatives[i-1] ,new Color(mImageView.getResources().getColor(mColors[i-1])));
-            lineses[i-1].setSize(3f);
-            lineses[i-1].setShadow(5f, 3f, 3f, Color.BLACK);
-            //No names to prevent double entries in legend:
-            //lineses[i-1].setName(mImageView.getResources().getString(R.string.stats_cumulative));
-        }
+        Lines lines = new Lines(hiddenPlotSheet,mCumulative ,Color.BLACK);
+        lines.setSize(3f);
+        lines.setName(mImageView.getResources().getString(R.string.stats_cumulative_percentage));
+        lines.setShadow(5f, 3f, 3f, Color.BLACK);
 
-        double rightYtics = ticsCalc(targetPixelDistanceBetweenTics, rect,  maxCumulative*1.1);
+        double rightYtics = ticsCalc(targetPixelDistanceBetweenTics, rect,  105.0);
         YAxis rightYaxis = new YAxis(hiddenPlotSheet, 0, rightYtics, rightYtics/2.0);
         rightYaxis.setIntegerNumbering(true);
         rightYaxis.setName(mImageView.getResources().getString(mAxisTitles[2]));
@@ -167,9 +148,8 @@ public class Intervals {
         for(BarGraph barGraph : barGraphs){
             plotSheet.addDrawable(barGraph);
         }
-        for(Lines lines : lineses){
-            plotSheet.addDrawable(lines);
-        }
+
+        plotSheet.addDrawable(lines);
         plotSheet.addDrawable(xaxis);
         plotSheet.addDrawable(yaxis);
         plotSheet.addDrawable(rightYaxis);
@@ -180,17 +160,18 @@ public class Intervals {
     }
 
     public boolean calculateIntervals(int type) {
+        double all = 0, avg = 0, max_ = 0;
         mType = type;
         mBackwards = true;
 
         mTitle = R.string.stats_review_intervals;
         mAxisTitles = new int[] { type, R.string.stats_cards, R.string.stats_percentage };
 
-        mValueLabels = new int[] { R.string.stats_cards};
+        mValueLabels = new int[] { R.string.stats_cards_intervals};
         mColors = new int[] { R.color.stats_interval};
         int num = 0;
-        int chunk = 0;
         String lim = "";
+        int chunk = 0;
         switch (type) {
             case Utils.TYPE_MONTH:
                 num = 31;
@@ -208,10 +189,6 @@ public class Intervals {
                 lim = "";
                 break;
         }
-        ArrayList<String> lims = new ArrayList<String>();
-        if (num != -1) {
-            lims.add("id > " + ((mCollectionData.getDayCutoff() - ((num + 1) * chunk * 86400)) * 1000));
-        }
 
         ArrayList<double[]> list = new ArrayList<double[]>();
         Cursor cur = null;
@@ -219,13 +196,26 @@ public class Intervals {
             cur = mAnkiDb
                     .getDatabase()
                     .rawQuery(
-                            "select ivl / :chunk as grp, count() from cards " +
+                            "select ivl / " + chunk + " as grp, count() from cards " +
                                     "where did in "+ _limitWholeOnly() +" and queue = 2 " + lim + " " +
                                     "group by grp " +
                                     "order by grp", null);
             while (cur.moveToNext()) {
                 list.add(new double[] { cur.getDouble(0), cur.getDouble(1) });
             }
+            if (cur != null && !cur.isClosed()) {
+                cur.close();
+            }
+            cur = mAnkiDb
+                    .getDatabase()
+                    .rawQuery(
+                            "select count(), avg(ivl), max(ivl) from cards where did in " +_limitWholeOnly() +
+                                    " and queue = 2", null);
+            cur.moveToFirst();
+            all = cur.getDouble(0);
+            avg = cur.getDouble(1);
+            max_ = cur.getDouble(2);
+
         } finally {
             if (cur != null && !cur.isClosed()) {
                 cur.close();
@@ -253,7 +243,14 @@ public class Intervals {
             if(mSeriesList[1][i] > mMaxCards)
                 mMaxCards = (int) Math.round(data[1]);
         }
+        mCumulative = Utils.createCumulative(mSeriesList);
+        for(int i = 0; i<list.size(); i++){
+            mCumulative[1][i] /= all/100;
+        }
+
         mMaxElements = list.size()-1;
+        mAverage = Utils.fmtTimeSpan((int)Math.round(avg*86400));
+        mLongest = Utils.fmtTimeSpan((int)Math.round(max_*86400));
         return list.size() > 0;
     }
 

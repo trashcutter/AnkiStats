@@ -1,6 +1,7 @@
 package com.wildplot.android.ankistats;
 
 import android.app.Application;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -54,6 +55,10 @@ public class AnkiStatsApplication extends Application {
     public void createReviewTimeChart(ImageView imageView){
         CreateReviewTimeTask createReviewTimeTask = new CreateReviewTimeTask();
         createReviewTimeTask.execute(imageView);
+    }
+    public void createIntervalChart(ImageView imageView){
+        CreateIntervalTask createIntervalTask = new CreateIntervalTask();
+        createIntervalTask.execute(imageView);
     }
 
     private class CreateForecastChartTask extends AsyncTask<ImageView, Void, Bitmap>{
@@ -125,6 +130,29 @@ public class AnkiStatsApplication extends Application {
                 mImageView.setImageBitmap(bitmap);
         }
     }
+    private class CreateIntervalTask extends AsyncTask<ImageView, Void, Bitmap>{
+        ImageView mImageView;
+        @Override
+        protected Bitmap doInBackground(ImageView... params) {
+            mImageView = params[0];
+            //int tag = (Integer)mImageView.getTag();
+            while(!mDatabaseLoaded){
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            Intervals intervals = new Intervals(mDatabase, params[0], mCollectionData);
+            return intervals.renderChart(mStatType);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if(bitmap != null)
+                mImageView.setImageBitmap(bitmap);
+        }
+    }
     private class OpenDatabaseTask extends  AsyncTask<String, Void, AnkiDb>{
 
         @Override
@@ -154,5 +182,8 @@ public class AnkiStatsApplication extends Application {
 
     public void setStatType(int mStatType) {
         this.mStatType = mStatType;
+    }
+    public static Resources getAppResources() {
+        return sInstance.getResources();
     }
 }

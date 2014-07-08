@@ -28,11 +28,13 @@
     <string name="statistics_cram">Cram</string>
     <string name="statistics_type_title">Statistics</string>
     <string name="stats_cards">Cards</string>
+    <string name="stats_cards_intervals">Cards with given Interval</string>
     <string name="stats_cumulative_cards">Cumulative Cards</string>
     <string name="stats_cumulative_answers">Cumulative Answers</string>
     <string name="stats_cumulative_time_minutes">Cumulative Minutes</string>
     <string name="stats_cumulative_time_hours">Cumulative Hours</string>
     <string name="stats_cumulative">Cumulative</string>
+    <string name="stats_cumulative_percentage">Cumulative Percentage</string>
     <string name="stats_answers">Answers</string>
     <string name="stats_minutes">Minutes</string>
     <string name="stats_hours">Hours</string>

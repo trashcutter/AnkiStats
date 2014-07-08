@@ -47,7 +47,7 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(0);
+        mViewPager.setOffscreenPageLimit(1);
 
         // When swiping between different sections, select the corresponding
         // tab. We can also use ActionBar.Tab#select() to do this if we have
@@ -170,7 +170,7 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 4;
         }
 
         @Override
@@ -178,11 +178,13 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
+                    return getString(R.string.stats_forecast).toUpperCase(l);
                 case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
+                    return getString(R.string.stats_review_count).toUpperCase(l);
                 case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
+                    return getString(R.string.stats_review_time).toUpperCase(l);
+                case 3:
+                    return getString(R.string.stats_review_intervals).toUpperCase(l);
             }
             return null;
         }
@@ -250,8 +252,10 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                 ((AnkiStatsApplication) getActivity().getApplication()).createForecastChart(mChart);
             } else if(mSectionNumber == 2) {
                 ((AnkiStatsApplication) getActivity().getApplication()).createReviewCountChart(mChart);
-            }else if(mSectionNumber == 3) {
+            } else if(mSectionNumber == 3) {
                 ((AnkiStatsApplication) getActivity().getApplication()).createReviewTimeChart(mChart);
+            } else if(mSectionNumber == 4) {
+                ((AnkiStatsApplication) getActivity().getApplication()).createIntervalChart(mChart);
             }
         }
 

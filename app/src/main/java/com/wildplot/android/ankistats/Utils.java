@@ -19,8 +19,10 @@
  ****************************************************************************************/
 package com.wildplot.android.ankistats;
 
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by mig on 06.07.2014.
@@ -30,6 +32,19 @@ public class Utils {
     public static final int TYPE_MONTH = 0;
     public static final int TYPE_YEAR = 1;
     public static final int TYPE_LIFE = 2;
+
+    private static final int TIME_SECONDS = 0;
+    private static final int TIME_MINUTES = 1;
+    private static final int TIME_HOURS = 2;
+    private static final int TIME_DAYS = 3;
+    private static final int TIME_MONTHS = 4;
+    private static final int TIME_YEARS = 5;
+
+    public static final int TIME_FORMAT_DEFAULT = 0;
+    public static final int TIME_FORMAT_IN = 1;
+    public static final int TIME_FORMAT_BEFORE = 2;
+    private static NumberFormat mCurrentNumberFormat = null;
+
     /** Given a list of integers, return a string '(int1,int2,...)'. */
     public static String ids2str(long[] ids) {
         StringBuilder sb = new StringBuilder();
@@ -62,4 +77,108 @@ public class Utils {
 
         return cumulativeValues;
     }
+
+    /**
+     * Return a string representing a time span (eg '2 days').
+     */
+    public static String fmtTimeSpan(int time) {
+        return fmtTimeSpan(time, 0, false, false);
+    }
+    public static String fmtTimeSpan(int time, boolean _short) {
+        return fmtTimeSpan(time, 0, _short, false);
+    }
+    public static String fmtTimeSpan(int time, int format, boolean _short, boolean boldNumber) {
+        int type;
+        int unit = 99;
+        int point = 0;
+        if (Math.abs(time) < 60 || unit < 1) {
+            type = TIME_SECONDS;
+        } else if (Math.abs(time) < 3600 || unit < 2) {
+            type = TIME_MINUTES;
+        } else if (Math.abs(time) < 60 * 60 * 24 || unit < 3) {
+            type = TIME_HOURS;
+        } else if (Math.abs(time) < 60 * 60 * 24 * 29.5 || unit < 4) {
+            type = TIME_DAYS;
+        } else if (Math.abs(time) < 60 * 60 * 24 * 30 * 11.95 || unit < 5) {
+            type = TIME_MONTHS;
+            point = 1;
+        } else {
+            type = TIME_YEARS;
+            point = 1;
+        }
+        double ftime = convertSecondsTo(time, type);
+
+        int formatId;
+        if (false){//_short) {
+            //formatId = R.array.next_review_short;
+        } else {
+            switch (format) {
+                case TIME_FORMAT_IN:
+                    if (Math.round(ftime * 10) == 10) {
+                        formatId = R.array.next_review_in_s;
+                    } else {
+                        formatId = R.array.next_review_in_p;
+                    }
+                    break;
+                case TIME_FORMAT_BEFORE:
+                    if (Math.round(ftime * 10) == 10) {
+                        formatId = R.array.next_review_before_s;
+                    } else {
+                        formatId = R.array.next_review_before_p;
+                    }
+                    break;
+                case TIME_FORMAT_DEFAULT:
+                default:
+                    if (Math.round(ftime * 10) == 10) {
+                        formatId = R.array.next_review_s;
+                    } else {
+                        formatId = R.array.next_review_p;
+                    }
+                    break;
+            }
+        }
+
+
+
+        String timeString = String.format(AnkiStatsApplication.getAppResources().getStringArray(formatId)[type], boldNumber ? "<b>" + fmtDouble(ftime, point) + "</b>" : fmtDouble(ftime, point));
+        if (boldNumber && time == 1) {
+            timeString = timeString.replace("1", "<b>1</b>");
+        }
+        return timeString;
+    }
+
+    private static double convertSecondsTo(int seconds, int type) {
+        switch (type) {
+            case TIME_SECONDS:
+                return seconds;
+            case TIME_MINUTES:
+                return seconds / 60.0;
+            case TIME_HOURS:
+                return seconds / 3600.0;
+            case TIME_DAYS:
+                return seconds / 86400.0;
+            case TIME_MONTHS:
+                return seconds / 2592000.0;
+            case TIME_YEARS:
+                return seconds / 31536000.0;
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * @return a string with decimal separator according to current locale
+     */
+    public static String fmtDouble(Double value) {
+        return fmtDouble(value, 1);
+    }
+    public static String fmtDouble(Double value, int point) {
+        // only retrieve the number format the first time
+        if (mCurrentNumberFormat == null) {
+            mCurrentNumberFormat = NumberFormat.getInstance(Locale.getDefault());
+        }
+        mCurrentNumberFormat.setMaximumFractionDigits(point);
+        return mCurrentNumberFormat.format(value);
+    }
+
 }
