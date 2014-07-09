@@ -1,5 +1,6 @@
 package com.wildplot.android.ankistats;
 
+import android.annotation.TargetApi;
 import android.app.Application;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,9 +40,16 @@ public class AnkiStatsApplication extends Application {
         return sInstance;
     }
 
+
     public static void disableDatabaseWriteAheadLogging(SQLiteDatabase db) {
+        if(android.os.Build.VERSION.SDK_INT >= 16)
+            disableDatabaseWriteAheadLogging(db, true);
+    }
+    @TargetApi(16)
+    public static void disableDatabaseWriteAheadLogging(SQLiteDatabase db, boolean is16) {
         db.disableWriteAheadLogging();
     }
+
 
     public void createForecastChart(ImageView imageView){
         CreateForecastChartTask createForecastChartTask = new CreateForecastChartTask();

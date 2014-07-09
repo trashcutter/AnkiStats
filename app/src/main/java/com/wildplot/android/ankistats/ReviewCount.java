@@ -66,7 +66,7 @@ public class ReviewCount {
         int height = mImageView.getMeasuredHeight();
         int width = mImageView.getMeasuredWidth();
 
-        if(height <=0 && width <= 0){
+        if(height <=0 || width <= 0){
             return null;
         }
 

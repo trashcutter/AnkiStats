@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.wildplot.android.ankistats"
-        minSdkVersion 16
-        targetSdkVersion 16
+        minSdkVersion 10
+        targetSdkVersion 20
         versionCode 10000012
         versionName "0.1.2"
     }

@@ -20,6 +20,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.widget.ImageView;
 import com.wildplot.android.rendering.*;
 import com.wildplot.android.rendering.graphics.*;
@@ -65,7 +66,9 @@ public class Forecast {
         int height = mImageView.getMeasuredHeight();
         int width = mImageView.getMeasuredWidth();
 
-        if(height <=0 && width <= 0){
+        Log.d(AnkiStatsApplication.TAG,"heigth: " + height + ", width: " + width + ", " + mImageView.getWidth());
+
+        if(height <=0 || width <= 0){
             return null;
         }
 
