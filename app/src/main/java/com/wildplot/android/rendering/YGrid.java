@@ -69,14 +69,13 @@ public class YGrid implements Drawable {
 	 * true if the grid should be drawn above the x-axis
 	 */
 	private boolean gridOnUpside = true;
+    private double[] mTickPositions;
 
-	/**
+    /**
 	 * Constructor for an Y-Grid object
 	 * @param plotSheet the sheet the grid will be drawn onto
 	 * @param ticStart start point for relative positioning of grid
 	 * @param tic the space between two grid lines
-	 * @param xLength maximal distance from x axis the grid will be drawn
-	 * @param yLength maximal distance from y axis the grid will be drawn
 	 */
 	public YGrid(PlotSheet plotSheet, double ticStart, double tic) {
 		super();
@@ -91,8 +90,6 @@ public class YGrid implements Drawable {
 	 * @param plotSheet the sheet the grid will be drawn onto
 	 * @param ticStart start point for relative positioning of grid
 	 * @param tic the space between two grid lines
-	 * @param xLength maximal distance from x axis the grid will be drawn
-	 * @param yLength maximal distance from y axis the grid will be drawn
 	 */
 	public YGrid(Color color, PlotSheet plotSheet, double ticStart, double tic) {
 		super();
@@ -106,9 +103,6 @@ public class YGrid implements Drawable {
 	 * Constructor for an Y-Grid object
 	 * @param plotSheet the sheet the grid will be drawn onto
 	 * @param ticStart start point for relative positioning of grid
-	 * @param tic the space between two grid lines
-	 * @param xLength maximal distance from x axis the grid will be drawn
-	 * @param yLength maximal distance from y axis the grid will be drawn
 	 */
 	public YGrid(PlotSheet plotSheet, double ticStart, int pixelDistance) {
 		super();
@@ -122,9 +116,6 @@ public class YGrid implements Drawable {
 	 * @param color set color of the grid
 	 * @param plotSheet the sheet the grid will be drawn onto
 	 * @param ticStart start point for relative positioning of grid
-	 * @param tic the space between two grid lines
-	 * @param xLength maximal distance from x axis the grid will be drawn
-	 * @param yLength maximal distance from y axis the grid will be drawn
 	 */
 	public YGrid(Color color, PlotSheet plotSheet, double ticStart, int pixelDistance) {
 		super();
@@ -162,17 +153,37 @@ public class YGrid implements Drawable {
 			}
 			
 		}
-		double currentX = leftStart;
-		
-		while(currentX <= this.xLength && !(currentX > 0 && !this.gridOnRight)) {
-			drawGridLine(currentX, g, field);
-			currentX+=this.tic;
-			//System.err.println("another loop");
-		}
+
+
+        if(mTickPositions == null)
+            drawImplicitLines(g, leftStart);
+        else
+            drawExplicitLines(g);
+
+
 		//System.err.println("out of loop");
 		g.setColor(oldColor);
 
 	}
+    private void drawImplicitLines(Graphics g, double leftStart){
+        Rectangle field = g.getClipBounds();
+        double currentX = leftStart;
+
+        while(currentX <= this.xLength && !(currentX > 0 && !this.gridOnRight)) {
+            drawGridLine(currentX, g, field);
+            currentX+=this.tic;
+            //System.err.println("another loop");
+        }
+    }
+
+    private void drawExplicitLines(Graphics g){
+        Rectangle field = g.getClipBounds();
+
+        for(int i = 0; i< mTickPositions.length; i++) {
+            double currentX = mTickPositions[i];
+            drawGridLine(currentX, g, field);
+        }
+    }
 	
 	/**
 	 * Draw a grid line in specified graphics object
@@ -239,5 +250,12 @@ public class YGrid implements Drawable {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public void setExplicitTics(double[] tickPositions){
+        mTickPositions = tickPositions;
+    }
+    public void unsetExplicitTics(){
+        mTickPositions = null;
     }
 }
