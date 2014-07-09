@@ -176,7 +176,9 @@ public class ReviewCount {
         plotSheet.addDrawable(xGrid);
         plotSheet.addDrawable(yGrid);
         plotSheet.paint(g);
-        return bufferedFrameImage.getBitmap();
+        Bitmap bitmap = bufferedFrameImage.getBitmap();
+        bitmap.prepareToDraw();
+        return bitmap;
     }
 
     public boolean calculateDone(int type, boolean reps) {

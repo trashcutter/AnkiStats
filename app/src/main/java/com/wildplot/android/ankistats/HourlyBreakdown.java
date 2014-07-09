@@ -156,11 +156,13 @@ public class HourlyBreakdown {
         plotSheet.addDrawable(xGrid);
         plotSheet.addDrawable(yGrid);
         plotSheet.paint(g);
-        return bufferedFrameImage.getBitmap();
+        Bitmap bitmap = bufferedFrameImage.getBitmap();
+        bitmap.prepareToDraw();
+        return bitmap;
     }
 
     public boolean calculateBreakdown(int type) {
-        mTitle = R.string.stats_review_intervals;
+        mTitle = R.string.stats_breakdown;
         mAxisTitles = new int[] { R.string.stats_time_of_day, R.string.stats_percentage_correct, R.string.stats_reviews };
 
         mValueLabels = new int[] { R.string.stats_percentage_correct, R.string.stats_answers};

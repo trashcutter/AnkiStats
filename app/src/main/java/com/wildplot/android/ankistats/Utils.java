@@ -78,6 +78,37 @@ public class Utils {
         return cumulativeValues;
     }
 
+    public static double[] createCumulative(double [] nonCumulative){
+        double[] cumulativeValues = new double[nonCumulative.length];
+        cumulativeValues[0] = nonCumulative[0];
+        for(int i = 1; i<nonCumulative.length; i++){
+            cumulativeValues[i] = cumulativeValues[i-1] + nonCumulative[i];
+        }
+        return cumulativeValues;
+    }
+    public static double[] createCumulativeInPercent(double [] nonCumulative, double total){
+        return createCumulativeInPercent(nonCumulative, total, -1);
+    }
+
+    //use -1 on ignoreIndex if you do not want to exclude anything
+    public static double[] createCumulativeInPercent(double [] nonCumulative, double total, int ignoreIndex){
+        double[] cumulativeValues = new double[nonCumulative.length];
+        if(total < 1)
+            cumulativeValues[0] = 0;
+        else if (0 != ignoreIndex)
+            cumulativeValues[0] = nonCumulative[0] / total * 100.0;
+
+        for(int i = 1; i<nonCumulative.length; i++){
+            if(total < 1){
+                cumulativeValues[i] = 0;
+            } else if (i != ignoreIndex)
+                cumulativeValues[i] = cumulativeValues[i-1] + nonCumulative[i] / total * 100.0;
+            else
+                cumulativeValues[i] = cumulativeValues[i-1];
+        }
+        return cumulativeValues;
+    }
+
     /**
      * Return a string representing a time span (eg '2 days').
      */

@@ -170,7 +170,7 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 5;
+            return 6;
         }
 
         @Override
@@ -187,6 +187,8 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                     return getString(R.string.stats_review_intervals).toUpperCase(l);
                 case 4:
                     return getString(R.string.stats_breakdown).toUpperCase(l);
+                case 5:
+                    return getString(R.string.stats_answer_buttons).toUpperCase(l);
             }
             return null;
         }
@@ -260,6 +262,8 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                 ((AnkiStatsApplication) getActivity().getApplication()).createIntervalChart(mChart);
             } else if(mSectionNumber == 5) {
                 ((AnkiStatsApplication) getActivity().getApplication()).createBreakdownChart(mChart);
+            } else if(mSectionNumber == 6) {
+                ((AnkiStatsApplication) getActivity().getApplication()).createAnswerButtonTask(mChart);
             }
         }
 
@@ -271,7 +275,7 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         }
 
         public void checkAndUpdate(){
-            System.err.println("<<<<<<<checkAndUpdate" + mSectionNumber);
+            //System.err.println("<<<<<<<checkAndUpdate" + mSectionNumber);
             if(!mIsCreated)
                 return;
             int height = mChart.getMeasuredHeight();
@@ -291,14 +295,14 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
             super.onCreateOptionsMenu(menu, inflater);
             mMenu = menu;
-            System.err.println("in onCreateOptionsMenu");
+            //System.err.println("in onCreateOptionsMenu");
             inflater.inflate(R.menu.anki_stats, menu);
             checkAndUpdate();
         }
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
-            System.err.println("in onOptionsItemSelected");
+            //System.err.println("in onOptionsItemSelected");
             AnkiStatsApplication ankiStatsApplication = ((AnkiStatsApplication) getActivity().getApplication());
 
             MenuItem monthItem  = (MenuItem)mMenu.findItem(R.id.action_month);

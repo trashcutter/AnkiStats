@@ -35,6 +35,7 @@
     <string name="stats_cumulative_time_hours">Cumulative Hours</string>
     <string name="stats_cumulative">Cumulative</string>
     <string name="stats_cumulative_percentage">Cumulative Percentage</string>
+    <string name="stats_cumulative_correct_percentage">Cumulative Correct %</string>
     <string name="stats_answers">Answers</string>
     <string name="stats_minutes">Minutes</string>
     <string name="stats_hours">Hours</string>
@@ -45,6 +46,7 @@
     <string name="stats_time_of_day">Time of Day</string>
     <string name="stats_percentage_correct">% Correct</string>
     <string name="stats_reviews">Reviews</string>
+    <string name="stats_answer_type">Answer Type</string>
     <string name="statistics_period_x_axis_minutes">Minutes</string>
     <string name="statistics_new_cards">New cards</string>
     <string name="statistics_failed_cards">Failed cards</string>
@@ -129,6 +131,7 @@
     <string name="stats_review_time">Review time</string>
     <string name="stats_review_intervals">Intervals</string>
     <string name="stats_breakdown">Hourly Breakdown</string>
+    <string name="stats_answer_buttons">Answer Buttons</string>
 
     <string-array name="stats_period">
         <item>1 month</item>
@@ -145,6 +148,19 @@
         <item>4PM</item>
         <item>10PM</item>
         <item>3AM</item>
+    </string-array>
+    <string-array name="stats_eases_ticks">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
     </string-array>
 
 </resources>

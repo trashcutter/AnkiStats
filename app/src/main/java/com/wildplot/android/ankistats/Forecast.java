@@ -153,7 +153,9 @@ public class Forecast {
         plotSheet.addDrawable(xGrid);
         plotSheet.addDrawable(yGrid);
         plotSheet.paint(g);
-        return bufferedFrameImage.getBitmap();
+        Bitmap bitmap = bufferedFrameImage.getBitmap();
+        bitmap.prepareToDraw();
+        return bitmap;
     }
 
     /**
