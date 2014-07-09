@@ -78,12 +78,12 @@ public class XAxis implements Drawable {
 	/**
 	 * the estimated size between two major tics in auto tic mode
 	 */
-	private int pixelDistance = 25;
+	private float pixelDistance = 25;
 	
 	/**
 	 * the estimated size between two minor tics in auto tic mode
 	 */
-	private int minorPixelDistance = 25;
+	private float minorPixelDistance = 25;
 	
 	/**
 	 * start of drawn x-axis
@@ -108,7 +108,7 @@ public class XAxis implements Drawable {
 	/**
 	 * length of a marker in pixel, length is only for one side
 	 */
-	private int markerLength = 5;
+	private float markerLength = 5;
 	
 	/**
 	 * true if this  axis is drawn onto the frame
@@ -138,7 +138,7 @@ public class XAxis implements Drawable {
 	 * @param plotSheet the sheet the axis will be drawn onto
 	 * @param ticStart the start of the axis markers used for relative alignment of other markers
 	 */
-	public XAxis(PlotSheet plotSheet, double ticStart, int pixelDistance, int minorPixelDistance ) {
+	public XAxis(PlotSheet plotSheet, double ticStart, float pixelDistance, float minorPixelDistance ) {
 		this.plotSheet = plotSheet;
 		this.ticStart = ticStart;
 		this.pixelDistance = pixelDistance;
@@ -175,8 +175,8 @@ public class XAxis implements Drawable {
 			this.isScientific = true;
 		
 		//horizontale Linie
-		int[] coordStart 	= plotSheet.toGraphicPoint(start, yOffset, field);
-		int[] coordEnd 		= plotSheet.toGraphicPoint(end, yOffset, field);
+        float[] coordStart 	= plotSheet.toGraphicPoint(start, yOffset, field);
+        float[] coordEnd 		= plotSheet.toGraphicPoint(end, yOffset, field);
 		
 		if(!this.isOnFrame)
 			g.drawLine(coordStart[0], coordStart[1], coordEnd[0], coordEnd[1]);
@@ -203,17 +203,17 @@ public class XAxis implements Drawable {
 
 
 		//arrow
-		int[] arowheadPos = {(plotSheet.getxRange()[1] >= this.end)? plotSheet.xToGraphic( this.end, field): plotSheet.xToGraphic(plotSheet.getxRange()[1], field), plotSheet.yToGraphic(yOffset, field) };
+        float[] arowheadPos = {(plotSheet.getxRange()[1] >= this.end)? plotSheet.xToGraphic( this.end, field): plotSheet.xToGraphic(plotSheet.getxRange()[1], field), plotSheet.yToGraphic(yOffset, field) };
 
 		FontMetrics fm = g.getFontMetrics( g.getFont() );
         float fontHeigth = fm.getHeight(true);
-		int width = fm.stringWidth(this.name);
+        float width = fm.stringWidth(this.name);
 		if(!this.isOnFrame) {
 			g.drawLine(arowheadPos[0]-1, arowheadPos[1]-1, arowheadPos[0]-6, arowheadPos[1]-3);
 			g.drawLine(arowheadPos[0]-1, arowheadPos[1]+1, arowheadPos[0]-6, arowheadPos[1]+3);
 			g.drawString(this.name, arowheadPos[0]-14-width, arowheadPos[1] + 12);
 		} else {
-			int[] middlePosition = {plotSheet.xToGraphic(0, field), plotSheet.yToGraphic( yOffset, field) };
+            float[] middlePosition = {plotSheet.xToGraphic(0, field), plotSheet.yToGraphic( yOffset, field) };
 			g.drawString(this.name, field.width/2-width/2, Math.round(middlePosition[1]+fontHeigth* 2.5f));
 		}
 	}
@@ -282,14 +282,14 @@ public class XAxis implements Drawable {
 		
 		FontMetrics fm = g.getFontMetrics( g.getFont() );
         float fontHeigth = fm.getHeight();
-		int[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
+        float[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
 		if(Math.abs(x) - Math.abs(xOffset) <0.001 && !this.isOnFrame){
 			coordStart[0]+=10;
 			coordStart[1]-=10;
 		}
 
 		String text = (mTickNameList == null)?df.format(x) : mTickNameList[index];
-		int width = fm.stringWidth(text);
+        float width = fm.stringWidth(text);
 		if(this.isScientific || width > this.pixelDistance){
 			text = (mTickNameList == null)?dfScience.format(x) : mTickNameList[index];
 			width = fm.stringWidth(text);
@@ -311,9 +311,9 @@ public class XAxis implements Drawable {
 	 * @param x position of marker
 	 */
 	private void drawUpwardsMarker(Graphics g, Rectangle field, double x){
-		
-		int[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
-		int[] coordEnd = {coordStart[0], coordStart[1] - this.markerLength};
+
+        float[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
+        float[] coordEnd = {coordStart[0], coordStart[1] - this.markerLength};
 		g.drawLine(coordStart[0], coordStart[1], coordEnd[0], coordEnd[1]);
 		
 	}
@@ -325,8 +325,8 @@ public class XAxis implements Drawable {
 	 * @param x position of marker
 	 */
 	private void drawDownwardsMarker(Graphics g, Rectangle field, double x){
-		int[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
-		int[] coordEnd = {coordStart[0], coordStart[1] + this.markerLength};
+        float[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
+        float[] coordEnd = {coordStart[0], coordStart[1] + this.markerLength};
 		g.drawLine(coordStart[0], coordStart[1], coordEnd[0], coordEnd[1]);
 		
 	}
@@ -441,9 +441,9 @@ public class XAxis implements Drawable {
 	 * @param x position of marker
 	 */
 	private void drawUpwardsMinorMarker(Graphics g, Rectangle field, double x){
-		
-		int[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
-		int[] coordEnd = {coordStart[0], (int) (coordStart[1] - 0.5*this.markerLength)};
+
+        float[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
+        float[] coordEnd = {coordStart[0], (int) (coordStart[1] - 0.5*this.markerLength)};
 		g.drawLine(coordStart[0], coordStart[1], coordEnd[0], coordEnd[1]);
 		
 	}
@@ -455,8 +455,8 @@ public class XAxis implements Drawable {
 	 * @param x position of marker
 	 */
 	private void drawDownwardsMinorMarker(Graphics g, Rectangle field, double x){
-		int[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
-		int[] coordEnd = {coordStart[0], (int) (coordStart[1] + 0.5*this.markerLength)};
+        float[] coordStart = plotSheet.toGraphicPoint(x, yOffset, field);
+        float[] coordEnd = {coordStart[0], (int) (coordStart[1] + 0.5*this.markerLength)};
 		g.drawLine(coordStart[0], coordStart[1], coordEnd[0], coordEnd[1]);
 		
 	}

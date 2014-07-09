@@ -27,7 +27,7 @@ import com.wildplot.android.rendering.interfaces.Function3D;
 public class ReliefDrawer implements Drawable {
 	
 	
-	private int pixelSkip = 6;
+	private float pixelSkip = 6;
 	private boolean abortPaint = false;
 	private boolean depthSearchAborted = false;
 	
@@ -237,8 +237,8 @@ public class ReliefDrawer implements Drawable {
 //				
 //			}
 //		}
-		
-		int length = (field.x + field.width-plotSheet.getFrameThickness()) - (field.x+plotSheet.getFrameThickness());
+
+        float length = (field.x + field.width-plotSheet.getFrameThickness()) - (field.x+plotSheet.getFrameThickness());
 		Thread[] threads = new Thread[threadCnt];
 		
 		PartRenderer[] partRenderer = new PartRenderer[threadCnt];
@@ -288,8 +288,8 @@ public class ReliefDrawer implements Drawable {
 		double upToThisF_xy;
 		double leftToThisF_xy;
 		
-		for(int i = field.x+plotSheet.getFrameThickness() + 1; i < field.x + field.width-plotSheet.getFrameThickness(); i++) {
-			for(int j = field.y+plotSheet.getFrameThickness() + 1; j < field.y +field.height-plotSheet.getFrameThickness(); j++) {
+		for(int i = Math.round(field.x+plotSheet.getFrameThickness() + 1); i < field.x + field.width-plotSheet.getFrameThickness(); i++) {
+			for(int j = Math.round(field.y+plotSheet.getFrameThickness() + 1); j < field.y +field.height-plotSheet.getFrameThickness(); j++) {
 				thisCoordinate = plotSheet.toCoordinatePoint(i, j, field);
 				upToThisCoordinate = plotSheet.toCoordinatePoint(i, j-1, field);
 				leftToThisCoordinate = plotSheet.toCoordinatePoint(i-1, j, field);
@@ -335,16 +335,16 @@ public class ReliefDrawer implements Drawable {
 		double f_xy = function.f(coordinate[0], coordinate[1]);
 		this.f_xHighest = f_xy;
 		this.f_xLowest 	= f_xy;
-		
-		int length = (field.x + field.width-plotSheet.getFrameThickness()) - (field.x+plotSheet.getFrameThickness());
+
+        float length = (field.x + field.width-plotSheet.getFrameThickness()) - (field.x+plotSheet.getFrameThickness());
 		Thread[] threads = new Thread[threadCnt];
-		
-		int stepSize = length/threadCnt;
+
+        float stepSize = length/threadCnt;
 		
 		DepthSearcher[] dSearcher = new DepthSearcher[threadCnt];
-		
-		int leftLim = field.x+plotSheet.getFrameThickness();
-		int rightLim = (field.x + plotSheet.getFrameThickness()+ (stepSize));
+
+        float leftLim = field.x+plotSheet.getFrameThickness();
+        float rightLim = (field.x + plotSheet.getFrameThickness()+ (stepSize));
 		dSearcher[0] = new DepthSearcher(field,leftLim ,rightLim );
 		threads[0] = new Thread(dSearcher[0]);
 		for(int i = 1; i< threads.length-1; i++){
@@ -502,7 +502,7 @@ public class ReliefDrawer implements Drawable {
 			
 			
 			@SuppressWarnings("deprecation")
-			int leftStart = plotSheet.xToGraphic(ReliefDrawer.this.xrange[1], field) + 10;
+            float leftStart = plotSheet.xToGraphic(ReliefDrawer.this.xrange[1], field) + 10;
 			
 			double lowerStart = ReliefDrawer.this.f_xLowest;
 			double upperEnd = 0;
@@ -555,7 +555,7 @@ public class ReliefDrawer implements Drawable {
 		 * @param ticlimit number of maximal tics in given range
 		 * @return tics for the specified parameters
 		 */
-		private double ticsCalc(double deltaRange, int ticlimit){
+		private double ticsCalc(double deltaRange, float ticlimit){
 			double tics = Math.pow(10, (int)Math.log10(deltaRange/ticlimit));
 			while(2.0*(deltaRange/(tics)) <= ticlimit) {
 				tics /= 2.0;
@@ -596,11 +596,11 @@ public class ReliefDrawer implements Drawable {
 		double f_xLowest = 0;
 		
 		Rectangle field = null;
-		int leftLim = 0;
-		int rightLim = 0;
+        float leftLim = 0;
+        float rightLim = 0;
         Function3D function;
 
-		public DepthSearcher(Rectangle field, int leftLim, int rightLim) {
+		public DepthSearcher(Rectangle field, float leftLim, float rightLim) {
 			super();
 			this.field = field;
 			this.leftLim = leftLim;
@@ -619,8 +619,8 @@ public class ReliefDrawer implements Drawable {
 			this.f_xLowest 	= f_xy;
 			
 			//scan for minimum and maximum f(x,y) in the given range
-			for(int i = leftLim; i <= rightLim; i+=pixelSkip) {
-				for(int j = field.y+plotSheet.getFrameThickness(); j < field.y +field.height-plotSheet.getFrameThickness(); j+=pixelSkip) {
+			for(int i = Math.round(leftLim); i <= rightLim; i+=pixelSkip) {
+				for(int j = Math.round(field.y+plotSheet.getFrameThickness()); j < field.y +field.height-plotSheet.getFrameThickness(); j+=pixelSkip) {
 					if(abortPaint){
 						return;
 					}
@@ -654,11 +654,11 @@ public class ReliefDrawer implements Drawable {
 
 		Graphics g = null;
 		Rectangle field = null;
-		int leftLim = 0;
-		int rightLim = 0;
+        float leftLim = 0;
+        float rightLim = 0;
         Function3D function;
 
-		public PartRenderer(Graphics g, int leftLim, int rightLim, Function3D function) {
+		public PartRenderer(Graphics g, float leftLim, float rightLim, Function3D function) {
 			super();
 			this.field = g.getClipBounds();
 			this.leftLim = leftLim;
@@ -675,8 +675,8 @@ public class ReliefDrawer implements Drawable {
 			double[] thisCoordinate = plotSheet.toCoordinatePoint(0, 0, field);
 			
 			double thisF_xy;
-			for(int i = leftLim ; i <= rightLim; i+=pixelSkip) {
-				for(int j = field.y + +plotSheet.getFrameThickness() ; j < field.y +field.height -plotSheet.getFrameThickness(); j+=pixelSkip) {
+			for(int i = Math.round(leftLim) ; i <= rightLim; i+=pixelSkip) {
+				for(int j = Math.round(field.y + +plotSheet.getFrameThickness()) ; j < field.y +field.height -plotSheet.getFrameThickness(); j+=pixelSkip) {
 					if(abortPaint)
 						return;
 					thisCoordinate = plotSheet.toCoordinatePoint(i, j, field);
@@ -698,11 +698,11 @@ public class ReliefDrawer implements Drawable {
 		
 	}
 
-	public int getPixelSkip() {
+	public float getPixelSkip() {
 		return pixelSkip;
 	}
 
-	public void setPixelSkip(int pixelSkip) {
+	public void setPixelSkip(float pixelSkip) {
 		this.pixelSkip = pixelSkip;
 	}
 

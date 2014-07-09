@@ -28,7 +28,7 @@ public class AdvancedPlotSheet extends PlotSheet implements Runnable{
 	private Rectangle field;
 
 	private boolean hasFirstPixelSkipSet = false;
-	private int firstPixelSkip = 20;
+	private float firstPixelSkip = 20;
 	private ReliefDrawer reliefDrawer = null;
 	
 
@@ -138,9 +138,9 @@ public class AdvancedPlotSheet extends PlotSheet implements Runnable{
 //			Font oldFont = gFrame.getFont();
 //			gFrame.setFont(oldFont.deriveFont(20.0f));
 			FontMetrics fm = gFrame.getFontMetrics();
-			int height = fm.getHeight();
-			
-			int width = fm.stringWidth(this.title);
+            float height = fm.getHeight();
+
+            float width = fm.stringWidth(this.title);
 			gFrame.drawString(this.title, field.width/2 -width/2, this.frameThickness - 10 - height);
 //			gFrame.setFont(oldFont);
 		}

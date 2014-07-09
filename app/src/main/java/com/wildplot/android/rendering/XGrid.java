@@ -143,8 +143,8 @@ public class XGrid implements Drawable {
 		g.setColor(color);
 		if(this.isAutoTic)
 			this.tic = plotSheet.ticsCalcY(pixelDistance, field);
-		
-		int tics = (int)((this.ticStart - (0-this.yLength))/tic);
+
+        float tics = (float)((this.ticStart - (0-this.yLength))/tic);
 		double downStart = this.ticStart - this.tic*tics; 
 		
 		if(downStart < 0 ) {

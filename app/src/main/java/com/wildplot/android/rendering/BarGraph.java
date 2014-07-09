@@ -159,11 +159,11 @@ public class BarGraph implements Drawable, Legendable {
 	 * @param size specific size for this bar
 	 */
 	private void drawBar(double x, double y, Graphics g, Rectangle field, double size) {
-		
-		
-		int[] pointUpLeft 		= plotSheet.toGraphicPoint(x-size/2, y, field);
-		int[] pointUpRight 		= plotSheet.toGraphicPoint(x+size/2, y, field);
-		int[] pointBottomLeft 	= plotSheet.toGraphicPoint(x-size/2, 0, field);
+
+
+        float[] pointUpLeft 		= plotSheet.toGraphicPoint(x-size/2, y, field);
+        float[] pointUpRight 		= plotSheet.toGraphicPoint(x+size/2, y, field);
+        float[] pointBottomLeft 	= plotSheet.toGraphicPoint(x-size/2, 0, field);
 		
 		if(filling){
 			Color oldColor = g.getColor();

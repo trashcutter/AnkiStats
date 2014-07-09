@@ -60,9 +60,9 @@ public class Lines implements Drawable, Legendable {
         if(mHasShadow){
             g.setShadow(mShadowRadius, mShadowDx, mShadowDy, mShadowColor);
         }
-		
-		int[] coordStart = plotSheet.toGraphicPoint(pointList[0][0],pointList[1][0],field);
-		int[] coordEnd = coordStart;
+
+        float[] coordStart = plotSheet.toGraphicPoint(pointList[0][0],pointList[1][0],field);
+        float[] coordEnd = coordStart;
 		
 		for(int i = 0; i< pointList[0].length; i++) {
 			coordEnd = coordStart;
@@ -85,7 +85,7 @@ public class Lines implements Drawable, Legendable {
 	 * @param field given Rect field
 	 */
 	public void drawPoint(double x, double y, Graphics g, Rectangle field) {
-		int[] coordStart 	= plotSheet.toGraphicPoint(x, y,field);
+        float[] coordStart 	= plotSheet.toGraphicPoint(x, y,field);
 		g.drawRect(coordStart[0]-3, coordStart[1]-3, coordStart[0]-3+6, coordStart[1]-3+6);
 //		g.drawLine(coordStart[0]-3, coordStart[1]-3, coordStart[0]+3, coordStart[1]-3);
 //		g.drawLine(coordStart[0]+3, coordStart[1]-3, coordStart[0]+3, coordStart[1]+3);

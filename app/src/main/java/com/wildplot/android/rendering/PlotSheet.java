@@ -46,7 +46,7 @@ public class PlotSheet implements Drawable {
 	/**
 	 * thickness of frame in pixel
 	 */
-    protected int frameThickness = 0;
+    protected float frameThickness = 0;
 	
 	/**
 	 * states if there is a border between frame and plot
@@ -56,7 +56,7 @@ public class PlotSheet implements Drawable {
 	/**
 	 * thickness of border in pixel, until now more than 1 may bring problems for axis drawing
 	 */
-    protected int borderThickness = 1;
+    protected float borderThickness = 1;
 	
 	//if class shold be made threadable for mulitplot mode, than
 	//this must be done otherwise
@@ -138,20 +138,20 @@ public class PlotSheet implements Drawable {
 	 * @return the converted x value
 	 */
 	@Deprecated
-	public int xToGraphic(double x, Rectangle field) {
+	public float xToGraphic(double x, Rectangle field) {
 
 		return (this.isLogX)?xToGraphicLog(x,field):xToGraphicLinear(x,field);
 	}
-	private int xToGraphicLinear(double x, Rectangle field) {
+	private float xToGraphicLinear(double x, Rectangle field) {
 		double xQuotient = (field.width - 2*frameThickness) / (Math.abs(this.screenParts.get(currentScreen).getxRange()[1] - this.screenParts.get(currentScreen).getxRange()[0]));
 		double xDistanceFromLeft = x - this.screenParts.get(currentScreen).getxRange()[0];
 		
-		return field.x + frameThickness + (int)Math.round(xDistanceFromLeft * xQuotient);
+		return field.x + frameThickness + (float)(xDistanceFromLeft * xQuotient);
 	}
-	private int xToGraphicLog(double x, Rectangle field) {
+	private float xToGraphicLog(double x, Rectangle field) {
 		double range = Math.log10(this.screenParts.get(currentScreen).getxRange()[1]) - Math.log10(this.screenParts.get(currentScreen).getxRange()[0]);
-		
-		return (int) Math.round(field.x + this.frameThickness + (Math.log10(x) - Math.log10(this.screenParts.get(currentScreen).getxRange()[0]))/(range) * (field.width - 2*frameThickness));
+
+		return (float) (field.x + this.frameThickness + (Math.log10(x) - Math.log10(this.screenParts.get(currentScreen).getxRange()[0]))/(range) * (field.width - 2*frameThickness));
 	}
 	
 	/**
@@ -162,21 +162,21 @@ public class PlotSheet implements Drawable {
 	 * @return the converted y value
 	 */
 	@Deprecated
-	public int yToGraphic(double y, Rectangle field) {
+	public float yToGraphic(double y, Rectangle field) {
 		return (this.isLogY)?yToGraphicLog(y,field):yToGraphicLinear(y,field);
 	}
 	
 	
-	private int yToGraphicLinear(double y, Rectangle field) {
+	private float yToGraphicLinear(double y, Rectangle field) {
 		double yQuotient = (field.height -2*frameThickness) / (Math.abs(this.screenParts.get(currentScreen).getyRange()[1] - this.screenParts.get(currentScreen).getyRange()[0]));
 		double yDistanceFromTop = this.screenParts.get(currentScreen).getyRange()[1] - y;
 		
 		return field.y + frameThickness + (int)Math.round(yDistanceFromTop * yQuotient);
 	}
-	private int yToGraphicLog(double y, Rectangle field) {
+	private float yToGraphicLog(double y, Rectangle field) {
 		
 		
-		return (int) Math.round((((Math.log10(y)-Math.log10(this.screenParts.get(currentScreen).getyRange()[0]))/(Math.log10(this.screenParts.get(currentScreen).getyRange()[1]) - Math.log10(this.screenParts.get(currentScreen).getyRange()[0]))) *(field.height-2*this.frameThickness) - (field.height-2*this.frameThickness))*(-1) + this.frameThickness   );
+		return (float) (((Math.log10(y)-Math.log10(this.screenParts.get(currentScreen).getyRange()[0]))/(Math.log10(this.screenParts.get(currentScreen).getyRange()[1]) - Math.log10(this.screenParts.get(currentScreen).getyRange()[0]))) *(field.height-2*this.frameThickness) - (field.height-2*this.frameThickness))*(-1) + this.frameThickness   ;
 	}
 	
 	/**
@@ -186,8 +186,8 @@ public class PlotSheet implements Drawable {
 	 * @param field clipping bounds for drawing
 	 * @return the point in graphical coordinates
 	 */
-	public int[] toGraphicPoint(double x, double y, Rectangle field) {
-		int[] graphicPoint = {xToGraphic(x, field), yToGraphic(y, field)};
+	public float[] toGraphicPoint(double x, double y, Rectangle field) {
+        float[] graphicPoint = {xToGraphic(x, field), yToGraphic(y, field)};
 		return graphicPoint;
 	}
 	
@@ -200,20 +200,20 @@ public class PlotSheet implements Drawable {
 	 * @return x-coordinate in plotting coordinate system
 	 */
 	@Deprecated
-	public double xToCoordinate(int x, Rectangle field) {
+	public double xToCoordinate(float x, Rectangle field) {
 		
 		
 		return (this.isLogX)?xToCoordinateLog(x,field):xToCoordinateLinear(x,field);
 	}
 	
-	private double xToCoordinateLinear(int x, Rectangle field) {
+	private double xToCoordinateLinear(float x, Rectangle field) {
 		double xQuotient = (Math.abs(this.screenParts.get(currentScreen).getxRange()[1] - this.screenParts.get(currentScreen).getxRange()[0])) / (field.width-2*frameThickness);
 		double xDistanceFromLeft = field.x - frameThickness + x;
 		
 		return this.screenParts.get(currentScreen).getxRange()[0] + xDistanceFromLeft*xQuotient;
 	}
 	
-	private double xToCoordinateLog(int x, Rectangle field) {
+	private double xToCoordinateLog(float x, Rectangle field) {
 		double range = Math.log10(this.screenParts.get(currentScreen).getxRange()[1]) - Math.log10(this.screenParts.get(currentScreen).getxRange()[0]);
 		
 		return Math.pow(10, ((x- (field.x + this.frameThickness))*1.0*(range) )/(field.width - 2.0*frameThickness) + Math.log10(this.screenParts.get(currentScreen).getxRange()[0]) ) ;
@@ -229,20 +229,20 @@ public class PlotSheet implements Drawable {
 	 * @return y-coordinate in plotting coordinate system
 	 */
 	@Deprecated
-	public double yToCoordinate(int y, Rectangle field) {
+	public double yToCoordinate(float y, Rectangle field) {
 		
 		
 		return (this.isLogY)?yToCoordinateLog(y, field):yToCoordinateLinear(y, field);
 	}
 	
-	public double yToCoordinateLinear(int y, Rectangle field) {
+	public double yToCoordinateLinear(float y, Rectangle field) {
 		double yQuotient = (Math.abs(this.screenParts.get(currentScreen).getyRange()[1] - this.screenParts.get(currentScreen).getyRange()[0])) / (field.height -2*frameThickness);
 		double yDistanceFromBottom = field.y + field.height - 1 - y -frameThickness;
 		
 		return this.screenParts.get(currentScreen).getyRange()[0] + yDistanceFromBottom*yQuotient;
 	}
 	
-	public double yToCoordinateLog(int y, Rectangle field) {
+	public double yToCoordinateLog(float y, Rectangle field) {
 
 		return Math.pow(10, ((y - this.frameThickness + (field.height-2*this.frameThickness))*(-1))/((field.height-2*this.frameThickness))*((Math.log10(this.screenParts.get(currentScreen).getyRange()[1]) - Math.log10(this.screenParts.get(currentScreen).getyRange()[0]))) +Math.log10(this.screenParts.get(currentScreen).getyRange()[0]));
 	}
@@ -254,7 +254,7 @@ public class PlotSheet implements Drawable {
 	 * @param field clipping bounds for drawing
 	 * @return the point in plotting coordinates
 	 */
-	public double[] toCoordinatePoint(int x, int y, Rectangle field) {
+	public double[] toCoordinatePoint(float x, float y, Rectangle field) {
 		double[] coordinatePoint = {xToCoordinate(x, field), yToCoordinate(y, field)};
 		
 		return coordinatePoint;
@@ -365,23 +365,23 @@ public class PlotSheet implements Drawable {
                 float newFontSize = oldFontSize * 2;
                 gFrame.setFontSize(newFontSize);
                 FontMetrics fm = gFrame.getFontMetrics();
-                int height = fm.getHeight();
+                float height = fm.getHeight();
 
-                int width = fm.stringWidth(this.title);
+                float width = fm.stringWidth(this.title);
                 gFrame.drawString(this.title, field.width / 2 - width / 2, this.frameThickness - 10 - height);
                 gFrame.setFontSize(oldFontSize);
             }
 
             Set<String> keySet = mLegendMap.keySet();
             int xPointer = 10;
-            int ySpacer = 10;
-            int rectangleSize = 16;
+            float ySpacer = 10;
+            float rectangleSize = 16;
             System.out.println("!!!!!!! " + mLegendMap.size());
             FontMetrics fm = gFrame.getFontMetrics();
             for(String legendName : keySet){
-                int stringWidth = fm.stringWidth(" : "+legendName);
-                int height = fm.getHeight();
-                int delta = rectangleSize - height;
+                float stringWidth = fm.stringWidth(" : "+legendName);
+                float height = fm.getHeight();
+                float delta = rectangleSize - height;
                 Color color = mLegendMap.get(legendName);
                 gFrame.setColor(color);
                 gFrame.fillRect(xPointer, ySpacer, rectangleSize, rectangleSize);
@@ -524,7 +524,7 @@ public class PlotSheet implements Drawable {
 	 * returns the size in pixel of the outer frame
 	 * @return the size of the outer frame in pixel
 	 */
-	public int getFrameThickness() {
+	public float getFrameThickness() {
 		return (isMultiMode)? 0:frameThickness;
 	}
 	
@@ -532,7 +532,7 @@ public class PlotSheet implements Drawable {
 	 * set the size of the outer frame in pixel
 	 * @param frameThickness new size for the outer frame in pixel
 	 */
-	public void setFrameThickness(int frameThickness) {
+	public void setFrameThickness(float frameThickness) {
 		if(frameThickness < 0){
 			System.err.println("PlotSheet:Error::Wrong Frame size (smaller than 0)");
 			System.exit(-1);
@@ -544,7 +544,7 @@ public class PlotSheet implements Drawable {
 	 * sets the size of the border between plot and outer frame in pixel
 	 * @param borderThickness size of border in pixel
 	 */
-	public void setBorderThickness(int borderThickness) {
+	public void setBorderThickness(float borderThickness) {
 		this.borderThickness = borderThickness;
 		this.isBordered = true;
 	}
@@ -577,9 +577,9 @@ public class PlotSheet implements Drawable {
 	 * @param field
 	 * @return
 	 */
-	public double ticsCalcX(int pixelDistance, Rectangle field){
+	public double ticsCalcX(float pixelDistance, Rectangle field){
 		double deltaRange = this.screenParts.get(currentScreen).getxRange()[1] - this.screenParts.get(currentScreen).getxRange()[0];
-		int ticlimit = field.width/pixelDistance;
+        float ticlimit = field.width/pixelDistance;
 		double tics = Math.pow(10, (int)Math.log10(deltaRange/ticlimit));
 		while(2.0*(deltaRange/(tics)) <= ticlimit) {
 			tics /= 2.0;
@@ -595,9 +595,9 @@ public class PlotSheet implements Drawable {
 	 * @param field
 	 * @return
 	 */
-	public double ticsCalcY(int pixelDistance, Rectangle field){
+	public double ticsCalcY(float pixelDistance, Rectangle field){
 		double deltaRange = this.screenParts.get(currentScreen).getyRange()[1] - this.screenParts.get(currentScreen).getyRange()[0];
-		int ticlimit = field.height/pixelDistance;
+        float ticlimit = field.height/pixelDistance;
 		double tics = Math.pow(10, (int)Math.log10(deltaRange/ticlimit));
 		while(2.0*(deltaRange/(tics)) <= ticlimit) {
 			tics /= 2.0;

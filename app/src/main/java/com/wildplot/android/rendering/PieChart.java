@@ -53,19 +53,19 @@ public class PieChart implements Drawable {
 	 */
 	public void paint(Graphics g){
 		Rectangle field = g.getClipBounds();
-		int realBorder=plotSheet.getFrameThickness() + 3;
-		int diameter=Math.min(field.width, field.height)-2*realBorder;
-		
-		int xCenter = (int)(field.width/2.0);
-		int yCenter = (int)(field.height/2.0);
+        float realBorder=plotSheet.getFrameThickness() + 3;
+        float diameter=Math.min(field.width, field.height)-2*realBorder;
+
+        float xCenter = (float)(field.width/2.0);
+        float yCenter = (float)(field.height/2.0);
 		Color oldColor = g.getColor();
-		
-		int xMiddle = xCenter - (int)(diameter/2.0);
-		int yMiddle = yCenter - (int)(diameter/2.0);
-		
-		int currentAngle = 0;
-		int nextAngle = (int)(360.0*prozent[0]);
-		int tmp = 0;
+
+        float xMiddle = xCenter - (float)(diameter/2.0);
+        float yMiddle = yCenter - (float)(diameter/2.0);
+
+        float currentAngle = 0;
+        float nextAngle = (float)(360.0*prozent[0]);
+        int tmp = 0;
 		for(int i = 1; i<prozent.length; i++) {
 			g.setColor(myCols[i%farbbestimmung]);
 			g.fillArc(xMiddle, yMiddle, (int)diameter, (int)(diameter), currentAngle, nextAngle - currentAngle);

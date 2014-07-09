@@ -50,7 +50,7 @@ public class PointDrawer2D implements Drawable {
 	 * @param field given rectangle field
 	 */
 	public void drawPoint(double x, double y, Graphics g, Rectangle field) {
-		int[] coordStart 	= plotSheet.toGraphicPoint(x, y,field);
+        float[] coordStart 	= plotSheet.toGraphicPoint(x, y,field);
 		g.drawArc(coordStart[0]-3, coordStart[1]-3, 6, 6, 0, 360);
 		
 //		g.drawLine(coordStart[0]-3, coordStart[1]-3, coordStart[0]+3, coordStart[1]+3);

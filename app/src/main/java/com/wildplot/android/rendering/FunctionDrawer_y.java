@@ -128,15 +128,15 @@ public class FunctionDrawer_y implements Drawable {
 		
 		double f_y = function.f(drawingPoint[1])*scaleFactor*extraScaleFactor;
 		double f_y_old = f_y;
-		
-		int[] coordStart = plotSheet.toGraphicPoint(f_y,drawingPoint[1],field);
+
+        float[] coordStart = plotSheet.toGraphicPoint(f_y,drawingPoint[1],field);
 		if(this.isOnFrame)
 			coordStart = plotSheet.toGraphicPoint(this.xOffset-f_y,drawingPoint[1],field);
-		
-		int[] coordEnd = coordStart;
-		
-		int leftStart = field.height+field.y;
-		int rightEnd = field.y;
+
+        float[] coordEnd = coordStart;
+
+        float leftStart = field.height+field.y;
+        float rightEnd = field.y;
 		if(this.isOnFrame){
 			leftStart = field.height+field.y-this.plotSheet.getFrameThickness();
 			rightEnd = field.y+this.plotSheet.getFrameThickness();
@@ -147,7 +147,7 @@ public class FunctionDrawer_y implements Drawable {
 			rightEnd = plotSheet.yToGraphic(rightLimit, field);
 		}
 		
-		for(int i = leftStart; i> rightEnd; i--) {
+		for(int i = Math.round(leftStart); i> rightEnd; i--) {
             if(isOnReset)
                 return;
 

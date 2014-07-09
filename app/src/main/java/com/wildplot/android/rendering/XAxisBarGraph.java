@@ -43,7 +43,6 @@ public class XAxisBarGraph implements Drawable {
 	/**
 	 * @param plotSheet
 	 * @param points the points used for calculating histogram data
-	 * @param start relative start position of histogram bars the other bars will be aligned to
 	 * @param size size of bars from left to right
 	 * @param color border color of bars, for filling color use setFilling() and setFillingColor()
 	 */
@@ -130,11 +129,11 @@ public class XAxisBarGraph implements Drawable {
 	 * @param size specific size (width) of this bar
 	 */
 	private void drawBar(double x, double heigth, Graphics g, Rectangle field, double size) {
-		
-		
-		int[] pointUpLeft 		= plotSheet.toGraphicPoint(x, heigth, field);
-		int[] pointUpRight 		= plotSheet.toGraphicPoint(x+size, heigth, field);
-		int[] pointBottomLeft 	= plotSheet.toGraphicPoint(x, 0, field);
+
+
+        float[] pointUpLeft 		= plotSheet.toGraphicPoint(x, heigth, field);
+        float[] pointUpRight 		= plotSheet.toGraphicPoint(x+size, heigth, field);
+        float[] pointBottomLeft 	= plotSheet.toGraphicPoint(x, 0, field);
 		
 		if(heigth < 0) {
 			pointUpLeft 		= plotSheet.toGraphicPoint(x, 0, field);

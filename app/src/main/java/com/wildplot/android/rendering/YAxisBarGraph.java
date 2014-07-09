@@ -136,11 +136,11 @@ public class YAxisBarGraph implements Drawable {
 	 * @param size specific size (width) of this bar
 	 */
 	private void drawBar(double y, double heigth, Graphics g, Rectangle field, double size) {
-		
-		
-		int[] pointUpLeft 		= plotSheet.toGraphicPoint(0,y+size , field);
-		int[] pointUpRight 		= plotSheet.toGraphicPoint(0+heigth,y+size , field);
-		int[] pointBottomLeft 	= plotSheet.toGraphicPoint(0,y , field);
+
+
+        float[] pointUpLeft 		= plotSheet.toGraphicPoint(0,y+size , field);
+        float[] pointUpRight 		= plotSheet.toGraphicPoint(0+heigth,y+size , field);
+        float[] pointBottomLeft 	= plotSheet.toGraphicPoint(0,y , field);
 		
 		if(heigth < 0) {
 			pointUpLeft 		= plotSheet.toGraphicPoint(0+heigth,y+size , field);

@@ -140,9 +140,9 @@ public class YGrid implements Drawable {
 		}
 		if(this.isAutoTic)
 			this.tic = plotSheet.ticsCalcX(pixelDistance, field);
-		
-		
-		int tics = (int)((this.ticStart - (0-this.xLength))/tic);
+
+
+        float tics = (float)((this.ticStart - (0-this.xLength))/tic);
 		double leftStart = this.ticStart - this.tic*tics; 
 		
 		if(leftStart < 0 ) {

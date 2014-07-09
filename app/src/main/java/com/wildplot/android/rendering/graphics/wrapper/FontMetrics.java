@@ -8,13 +8,13 @@ public class FontMetrics {
         this.g = g;
     }
     
-    public int stringWidth(String text){
-        return Math.round(g.getPaint().measureText(text));
+    public float stringWidth(String text){
+        return g.getPaint().measureText(text);
         
     }
 
-    public int getHeight() {
-        return Math.round(g.getPaint().getTextSize());    
+    public float getHeight() {
+        return g.getPaint().getTextSize();
     }
 
     public float getHeight(boolean foo) {

@@ -83,11 +83,11 @@ public class Integral implements Drawable {
 		Rectangle field = g.getClipBounds();
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setColor(color);
+
+        float[] startPoint 	= plotSheet.toGraphicPoint(this.start, 0, field);
+        float[] endPoint 		= plotSheet.toGraphicPoint(this.end, 0, field);
 		
-		int[] startPoint 	= plotSheet.toGraphicPoint(this.start, 0, field);
-		int[] endPoint 		= plotSheet.toGraphicPoint(this.end, 0, field);
-		
-		for(int i = startPoint[0]; i<=endPoint[0];i++) {
+		for(int i = Math.round(startPoint[0]); i<=endPoint[0];i++) {
 			double currentX = plotSheet.xToCoordinate(i, field);
 			double currentY = function.f(currentX);
 			
