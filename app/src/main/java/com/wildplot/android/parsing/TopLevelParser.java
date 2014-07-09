@@ -1,4 +1,4 @@
-package com.wildplot.android.newParsing;
+package com.wildplot.android.parsing;
 
 import com.wildplot.android.rendering.interfaces.Function2D;
 import com.wildplot.android.rendering.interfaces.Function3D;

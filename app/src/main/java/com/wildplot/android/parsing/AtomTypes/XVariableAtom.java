@@ -1,19 +1,19 @@
-package com.wildplot.android.newParsing.AtomTypes;
+package com.wildplot.android.parsing.AtomTypes;
 
-import com.wildplot.android.newParsing.Atom;
-import com.wildplot.android.newParsing.ExpressionFormatException;
-import com.wildplot.android.newParsing.TopLevelParser;
-import com.wildplot.android.newParsing.TreeElement;
+import com.wildplot.android.parsing.Atom;
+import com.wildplot.android.parsing.ExpressionFormatException;
+import com.wildplot.android.parsing.TopLevelParser;
+import com.wildplot.android.parsing.TreeElement;
 
 /**
  * @author Michael Goldbach
  *
  */
-public class YVariableAtom implements TreeElement {
+public class XVariableAtom implements TreeElement {
     private Atom.AtomType atomType = Atom.AtomType.VARIABLE;
     private TopLevelParser parser;
 
-    public YVariableAtom(TopLevelParser parser){
+    public XVariableAtom(TopLevelParser parser){
         this.parser = parser;
     }
 
@@ -26,7 +26,7 @@ public class YVariableAtom implements TreeElement {
 
         if (atomType != Atom.AtomType.INVALID){
 
-            return parser.getY();
+            return parser.getX();
         }
         else
             throw new ExpressionFormatException("Number is Invalid, cannot parse");

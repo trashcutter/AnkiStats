@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Vector;
 
-import com.wildplot.android.newParsing.TopLevelParser;
+import com.wildplot.android.parsing.TopLevelParser;
 import com.wildplot.android.rendering.graphics.wrapper.BufferedImage;
 import com.wildplot.android.rendering.graphics.wrapper.Color;
 import com.wildplot.android.rendering.graphics.wrapper.Graphics;

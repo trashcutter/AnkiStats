@@ -1,4 +1,4 @@
-package com.wildplot.android.newParsing;
+package com.wildplot.android.parsing;
 
 /**
  * Created by mig on 25.05.13.

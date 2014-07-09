@@ -1,8 +1,8 @@
-package com.wildplot.android.newParsing.AtomTypes;
+package com.wildplot.android.parsing.AtomTypes;
 
-import com.wildplot.android.newParsing.ExpressionFormatException;
-import com.wildplot.android.newParsing.Atom;
-import com.wildplot.android.newParsing.TreeElement;
+import com.wildplot.android.parsing.ExpressionFormatException;
+import com.wildplot.android.parsing.Atom;
+import com.wildplot.android.parsing.TreeElement;
 
 /**
  * @author Michael Goldbach

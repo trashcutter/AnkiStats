@@ -1,6 +1,6 @@
-package com.wildplot.android.newParsing.AtomTypes;
+package com.wildplot.android.parsing.AtomTypes;
 
-import com.wildplot.android.newParsing.*;
+import com.wildplot.android.parsing.*;
 
 import java.util.regex.Pattern;
 
