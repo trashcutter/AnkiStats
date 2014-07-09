@@ -170,7 +170,7 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 4;
+            return 5;
         }
 
         @Override
@@ -185,6 +185,8 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                     return getString(R.string.stats_review_time).toUpperCase(l);
                 case 3:
                     return getString(R.string.stats_review_intervals).toUpperCase(l);
+                case 4:
+                    return getString(R.string.stats_breakdown).toUpperCase(l);
             }
             return null;
         }
@@ -256,6 +258,8 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                 ((AnkiStatsApplication) getActivity().getApplication()).createReviewTimeChart(mChart);
             } else if(mSectionNumber == 4) {
                 ((AnkiStatsApplication) getActivity().getApplication()).createIntervalChart(mChart);
+            } else if(mSectionNumber == 5) {
+                ((AnkiStatsApplication) getActivity().getApplication()).createBreakdownChart(mChart);
             }
         }
 

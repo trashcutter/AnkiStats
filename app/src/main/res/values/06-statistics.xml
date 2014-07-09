@@ -42,6 +42,9 @@
     <string name="stats_period_month">1 month</string>
     <string name="stats_period_year">1 year</string>
     <string name="stats_period_lifetime">all</string>
+    <string name="stats_time_of_day">Time of Day</string>
+    <string name="stats_percentage_correct">% Correct</string>
+    <string name="stats_reviews">Reviews</string>
     <string name="statistics_period_x_axis_minutes">Minutes</string>
     <string name="statistics_new_cards">New cards</string>
     <string name="statistics_failed_cards">Failed cards</string>
@@ -125,6 +128,7 @@
     <string name="stats_review_count">Review count</string>
     <string name="stats_review_time">Review time</string>
     <string name="stats_review_intervals">Intervals</string>
+    <string name="stats_breakdown">Hourly Breakdown</string>
 
     <string-array name="stats_period">
         <item>1 month</item>
@@ -134,6 +138,13 @@
     <string-array name="stats_range">
         <item>collection</item>
         <item>current deck</item>
+    </string-array>
+    <string-array name="stats_day_time_strings">
+        <item>4AM</item>
+        <item>10AM</item>
+        <item>4PM</item>
+        <item>10PM</item>
+        <item>3AM</item>
     </string-array>
 
 </resources>

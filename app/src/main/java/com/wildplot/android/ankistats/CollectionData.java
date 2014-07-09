@@ -148,4 +148,8 @@ public class CollectionData {
         }
         mChanged = false;
     }
+
+    public long getCrt() {
+        return mCrt;
+    }
 }
