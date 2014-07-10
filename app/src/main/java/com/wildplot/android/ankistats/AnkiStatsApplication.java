@@ -72,6 +72,10 @@ public class AnkiStatsApplication extends Application {
         CreateBreakdownTask createBreakdownTask = new CreateBreakdownTask();
         createBreakdownTask.execute(imageView);
     }
+    public void createWeeklyBreakdownChart(ImageView imageView){
+        CreateWeeklyBreakdownTask createWeeklyBreakdownTask = new CreateWeeklyBreakdownTask();
+        createWeeklyBreakdownTask.execute(imageView);
+    }
     public void createAnswerButtonTask(ImageView imageView){
         CreateAnswerButtonTask createAnswerButtonTask = new CreateAnswerButtonTask();
         createAnswerButtonTask.execute(imageView);
@@ -188,6 +192,29 @@ public class AnkiStatsApplication extends Application {
             }
             HourlyBreakdown hourlyBreakdown = new HourlyBreakdown(mDatabase, params[0], mCollectionData);
             return hourlyBreakdown.renderChart(mStatType);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if(bitmap != null)
+                mImageView.setImageBitmap(bitmap);
+        }
+    }
+    private class CreateWeeklyBreakdownTask extends AsyncTask<ImageView, Void, Bitmap>{
+        ImageView mImageView;
+        @Override
+        protected Bitmap doInBackground(ImageView... params) {
+            mImageView = params[0];
+            //int tag = (Integer)mImageView.getTag();
+            while(!mDatabaseLoaded){
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            WeeklyBreakdown weeklyBreakdown = new WeeklyBreakdown(mDatabase, params[0], mCollectionData);
+            return weeklyBreakdown.renderChart(mStatType);
         }
 
         @Override

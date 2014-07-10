@@ -34,7 +34,7 @@ import java.util.*;
 /**
  * Created by mig on 06.07.2014.
  */
-public class HourlyBreakdown {
+public class WeeklyBreakdown {
     private AnkiDb mAnkiDb;
     private ImageView mImageView;
     private CollectionData mCollectionData;
@@ -62,7 +62,7 @@ public class HourlyBreakdown {
     private double mPeak;
     private double mMcount;
 
-    public HourlyBreakdown(AnkiDb ankiDb, ImageView imageView, CollectionData collectionData){
+    public WeeklyBreakdown(AnkiDb ankiDb, ImageView imageView, CollectionData collectionData){
         mAnkiDb = ankiDb;
         mImageView = imageView;
         mCollectionData = collectionData;
@@ -100,8 +100,8 @@ public class HourlyBreakdown {
 
         XAxis xaxis = new XAxis(plotSheet, 0, xTics, xTics/2.0);
         YAxis yaxis = new YAxis(plotSheet, 0, yTics, yTics/2.0);
-        double[] timePositions = {0, 6, 12, 18, 23};
-        xaxis.setExplicitTics(timePositions, mImageView.getResources().getStringArray(R.array.stats_day_time_strings));
+        double[] timePositions = {0, 1, 2, 3, 4, 5, 6};
+        xaxis.setExplicitTics(timePositions, mImageView.getResources().getStringArray(R.array.stats_week_days));
         xaxis.setOnFrame();
         xaxis.setName(mImageView.getResources().getString(mAxisTitles[0]));
         xaxis.setIntegerNumbering(true);
@@ -163,7 +163,7 @@ public class HourlyBreakdown {
     }
 
     public boolean calculateBreakdown(int type) {
-        mTitle = R.string.stats_breakdown;
+        mTitle = R.string.stats_weekly_breakdown;
         mAxisTitles = new int[] { R.string.stats_time_of_day, R.string.stats_percentage_correct, R.string.stats_reviews };
 
         mValueLabels = new int[] { R.string.stats_percentage_correct, R.string.stats_answers};
@@ -204,14 +204,16 @@ public class HourlyBreakdown {
 
         ArrayList<double[]> list = new ArrayList<double[]>();
         Cursor cur = null;
-        String query = "select " +
-                "23 - ((cast((" + cut + " - id/1000) / 3600.0 as int)) % 24) as hour, " +
+        String query = "SELECT strftime('%w',datetime( cast(id/ 1000  -" + sd.get(Calendar.HOUR_OF_DAY)*3600 +
+                " as int), 'unixepoch')) as wd, " +
                 "sum(case when ease = 1 then 0 else 1 end) / " +
                 "cast(count() as float) * 100, " +
                 "count() " +
-                "from revlog where type in (0,1,2) " + lim +" " +
-                "group by hour having count() > 30 order by hour";
-        Log.d(AnkiStatsApplication.TAG, sd.get(Calendar.HOUR_OF_DAY) + " : " +cutoff + " breakdown query: " + query);
+                "from revlog " +
+                "where type in (0,1,2) " + lim +" " +
+                "group by wd " +
+                "order by wd";
+        Log.d(AnkiStatsApplication.TAG, sd.get(Calendar.HOUR_OF_DAY) + " : " +cutoff + " weekly breakdown query: " + query);
         try {
             cur = mAnkiDb
                     .getDatabase()
@@ -241,24 +243,6 @@ public class HourlyBreakdown {
 //            list.add(new double[] { Math.max(12, list.get(list.size() - 1)[0] + 1), 0, 0 });
 //        }
 
-
-        for(int i = 0; i < list.size(); i++) {
-            double[] data = list.get(i);
-            int intHour = (int)data[0];
-            int hour = (intHour - 4) % 24;
-            if (hour < 0)
-                hour += 24;
-            data[0] = hour;
-            list.set(i, data);
-        }
-        Collections.sort(list, new Comparator<double[]>() {
-            @Override
-            public int compare(double[] s1, double[] s2) {
-                if (s1[0] < s2[0]) return -1;
-                if (s1[0] > s2[0]) return 1;
-                return 0;
-            }
-        });
 
         mSeriesList = new double[4][list.size()];
         mPeak = 0.0;

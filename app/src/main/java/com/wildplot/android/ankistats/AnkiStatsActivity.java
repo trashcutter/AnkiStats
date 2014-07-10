@@ -170,12 +170,13 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 7;
+            return 8;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
+
             switch (position) {
                 case 0:
                     return getString(R.string.stats_forecast).toUpperCase(l);
@@ -188,8 +189,10 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                 case 4:
                     return getString(R.string.stats_breakdown).toUpperCase(l);
                 case 5:
-                    return getString(R.string.stats_answer_buttons).toUpperCase(l);
+                    return getString(R.string.stats_weekly_breakdown).toUpperCase(l);
                 case 6:
+                    return getString(R.string.stats_answer_buttons).toUpperCase(l);
+                case 7:
                     return getString(R.string.stats_cards_types).toUpperCase(l);
             }
             return null;
@@ -265,8 +268,10 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
             } else if(mSectionNumber == 5) {
                 ((AnkiStatsApplication) getActivity().getApplication()).createBreakdownChart(mChart);
             } else if(mSectionNumber == 6) {
-                ((AnkiStatsApplication) getActivity().getApplication()).createAnswerButtonTask(mChart);
+                ((AnkiStatsApplication) getActivity().getApplication()).createWeeklyBreakdownChart(mChart);
             } else if(mSectionNumber == 7) {
+                ((AnkiStatsApplication) getActivity().getApplication()).createAnswerButtonTask(mChart);
+            } else if(mSectionNumber == 8) {
                 ((AnkiStatsApplication) getActivity().getApplication()).createCardsTypesTask(mChart);
             }
         }

@@ -47,6 +47,7 @@
     <string name="stats_period_year">1 year</string>
     <string name="stats_period_lifetime">all</string>
     <string name="stats_time_of_day">Time of Day</string>
+    <string name="stats_day_of_week">Day of Week</string>
     <string name="stats_percentage_correct">% Correct</string>
     <string name="stats_reviews">Reviews</string>
     <string name="stats_answer_type">Answer Type</string>
@@ -134,6 +135,7 @@
     <string name="stats_review_time">Review time</string>
     <string name="stats_review_intervals">Intervals</string>
     <string name="stats_breakdown">Hourly Breakdown</string>
+    <string name="stats_weekly_breakdown">Weekly Breakdown</string>
     <string name="stats_answer_buttons">Answer Buttons</string>
     <string name="stats_cards_types">Cards Types</string>
 
@@ -152,6 +154,15 @@
         <item>4PM</item>
         <item>10PM</item>
         <item>3AM</item>
+    </string-array>
+    <string-array name="stats_week_days">
+        <item>Sun</item>
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
     </string-array>
     <string-array name="stats_eases_ticks">
         <item>1</item>
