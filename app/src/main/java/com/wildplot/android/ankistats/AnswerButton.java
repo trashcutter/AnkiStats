@@ -27,7 +27,6 @@ import com.wildplot.android.rendering.graphics.wrapper.Rectangle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -61,7 +60,7 @@ public class AnswerButton {
     }
 
     public Bitmap renderChart(int type){
-        calculateBreakdown(type);
+        calculateAnswerButtons(type);
         int height = mImageView.getMeasuredHeight();
         int width = mImageView.getMeasuredWidth();
 
@@ -167,7 +166,7 @@ public class AnswerButton {
         return bitmap;
     }
 
-    public boolean calculateBreakdown(int type) {
+    public boolean calculateAnswerButtons(int type) {
         mTitle = R.string.stats_answer_buttons;
         mAxisTitles = new int[] { R.string.stats_answer_type, R.string.stats_answers, R.string.stats_cumulative_correct_percentage };
 

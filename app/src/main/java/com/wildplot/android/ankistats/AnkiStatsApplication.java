@@ -76,6 +76,10 @@ public class AnkiStatsApplication extends Application {
         CreateAnswerButtonTask createAnswerButtonTask = new CreateAnswerButtonTask();
         createAnswerButtonTask.execute(imageView);
     }
+    public void createCardsTypesTask(ImageView imageView){
+        CreateCardsTypesChart createCardsTypesChart = new CreateCardsTypesChart();
+        createCardsTypesChart.execute(imageView);
+    }
 
     private class CreateForecastChartTask extends AsyncTask<ImageView, Void, Bitmap>{
         ImageView mImageView;
@@ -207,6 +211,29 @@ public class AnkiStatsApplication extends Application {
             }
             AnswerButton answerButton = new AnswerButton(mDatabase, params[0], mCollectionData);
             return answerButton.renderChart(mStatType);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            if(bitmap != null)
+                mImageView.setImageBitmap(bitmap);
+        }
+    }
+    private class CreateCardsTypesChart extends AsyncTask<ImageView, Void, Bitmap>{
+        ImageView mImageView;
+        @Override
+        protected Bitmap doInBackground(ImageView... params) {
+            mImageView = params[0];
+            //int tag = (Integer)mImageView.getTag();
+            while(!mDatabaseLoaded){
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            CardsTypes cardsTypes = new CardsTypes(mDatabase, params[0], mCollectionData);
+            return cardsTypes.renderChart(mStatType);
         }
 
         @Override

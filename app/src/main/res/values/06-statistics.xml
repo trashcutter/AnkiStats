@@ -23,6 +23,9 @@
     <string name="statistics_menu">Statistics</string>
     <string name="statistics_young">Young</string>
     <string name="statistics_mature">Mature</string>
+    <string name="statistics_young_and_learn">Young+Learn</string>
+    <string name="statistics_unlearned">Unlearned</string>
+    <string name="statistics_suspended">Suspended</string>
     <string name="statistics_relearn">Relearn</string>
     <string name="statistics_learn">Learn</string>
     <string name="statistics_cram">Cram</string>
@@ -132,6 +135,7 @@
     <string name="stats_review_intervals">Intervals</string>
     <string name="stats_breakdown">Hourly Breakdown</string>
     <string name="stats_answer_buttons">Answer Buttons</string>
+    <string name="stats_cards_types">Cards Types</string>
 
     <string-array name="stats_period">
         <item>1 month</item>

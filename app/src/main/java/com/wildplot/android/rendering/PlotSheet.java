@@ -378,12 +378,20 @@ public class PlotSheet implements Drawable {
             float rectangleSize = 16;
             System.out.println("!!!!!!! " + mLegendMap.size());
             FontMetrics fm = gFrame.getFontMetrics();
+            float currentPixelWidth = xPointer;
+
             for(String legendName : keySet){
+
                 float stringWidth = fm.stringWidth(" : "+legendName);
                 float height = fm.getHeight();
                 float delta = rectangleSize - height;
                 Color color = mLegendMap.get(legendName);
                 gFrame.setColor(color);
+
+                if(xPointer + rectangleSize*2 + stringWidth >= field.width){
+                    xPointer = 10;
+                    ySpacer += rectangleSize + 10;
+                }
                 gFrame.fillRect(xPointer, ySpacer, rectangleSize, rectangleSize);
                 gFrame.setColor(Color.BLACK);
                 gFrame.drawString(" : "+legendName, xPointer + rectangleSize , ySpacer+rectangleSize - delta/2);

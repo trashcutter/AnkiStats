@@ -1,20 +1,24 @@
 package com.wildplot.android.rendering;
 
 import com.wildplot.android.rendering.graphics.wrapper.Color;
+import com.wildplot.android.rendering.graphics.wrapper.FontMetrics;
 import com.wildplot.android.rendering.graphics.wrapper.Graphics;
 import com.wildplot.android.rendering.graphics.wrapper.Rectangle;
 import com.wildplot.android.rendering.interfaces.Drawable;
+import com.wildplot.android.rendering.interfaces.Legendable;
 
 
-public class PieChart implements Drawable {
+public class PieChart implements Drawable, Legendable {
 
-	private double[] values;
-	private double[] prozent;
-	private double sum;
-	private int farbbestimmung;
-	PlotSheet plotSheet;
+    private String mName = "";
+    private boolean mNameIsSet = false;
+	private double[] mValues;
+	private double[] mPercent;
+	private double mSum;
+	private int mColorHelper;
+	private PlotSheet mPlotSheet;
 
-	final public static Color[] myCols = {
+	private Color[] mColors = {
 		new Color(255,  0,  0,180),
 		new Color(0  ,255,  0,180),
 		new Color(0  ,0,  255,180),
@@ -25,17 +29,17 @@ public class PieChart implements Drawable {
 		};
 
 	public PieChart(PlotSheet plotSheet, double[] vals){
-		this.plotSheet = plotSheet;
-		values = vals;
-		//values = new double[] {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5};
-		prozent = new double[values.length];
-		for(double v:values) sum+=v;
-		prozent[0]=values[0]/sum;
-		for(int i=1; i<values.length; i++){
-			prozent[i]=prozent[i-1]+values[i]/sum;
+		this.mPlotSheet = plotSheet;
+		mValues = vals;
+		//mValues = new double[] {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5};
+		mPercent = new double[mValues.length];
+		for(double v: mValues) mSum +=v;
+		mPercent[0]= mValues[0]/ mSum;
+		for(int i=1; i< mValues.length; i++){
+			mPercent[i]= mPercent[i-1]+ mValues[i]/ mSum;
 		}
-		farbbestimmung=myCols.length;
-		if((values.length-1)%(myCols.length)==0)farbbestimmung=myCols.length-1;
+		mColorHelper = mColors.length;
+		if((mValues.length-1)%(mColors.length)==0) mColorHelper = mColors.length-1;
 	}
 
 	/*
@@ -53,7 +57,7 @@ public class PieChart implements Drawable {
 	 */
 	public void paint(Graphics g){
 		Rectangle field = g.getClipBounds();
-        float realBorder=plotSheet.getFrameThickness() + 3;
+        float realBorder= mPlotSheet.getFrameThickness() + 3;
         float diameter=Math.min(field.width, field.height)-2*realBorder;
 
         float xCenter = (float)(field.width/2.0);
@@ -64,29 +68,41 @@ public class PieChart implements Drawable {
         float yMiddle = yCenter - (float)(diameter/2.0);
 
         float currentAngle = 0;
-        float nextAngle = (float)(360.0*prozent[0]);
+        float nextAngle = (float)(360.0* mPercent[0]);
         int tmp = 0;
-		for(int i = 1; i<prozent.length; i++) {
-			g.setColor(myCols[i%farbbestimmung]);
+		for(int i = 0; i< mPercent.length-1; i++) {
+			g.setColor(mColors[i% mColorHelper]);
 			g.fillArc(xMiddle, yMiddle, (int)diameter, (int)(diameter), currentAngle, nextAngle - currentAngle);
 			currentAngle = nextAngle;
-			nextAngle = (int)(360.0*prozent[i]);
-			tmp = i+1;
+			nextAngle = (int)(360.0* mPercent[i+1]);
+			tmp = i+2;
 		}
 		
 		//last one does need some corrections to fill a full circle:
-		g.setColor(myCols[tmp%farbbestimmung]);
+		g.setColor(mColors[tmp% mColorHelper]);
 		g.fillArc(xMiddle, yMiddle, diameter, diameter, currentAngle, 360 - currentAngle);
 		g.setColor(Color.black);
 		g.drawArc(xMiddle, yMiddle, diameter, diameter, 0, 360);
 		
 		//Beschriftung
-		g.setColor(Color.black);
-		g.drawString(""+Math.round(((prozent[0])*100)*100)/100.0+"%", (int)(xCenter+Math.cos(prozent[0]*Math.PI)*0.375*diameter)-20, (int)(yCenter-Math.sin(prozent[0]*Math.PI)*0.375*diameter));
-		for(int j=1;j<prozent.length;j++)
+		g.setColor(Color.white);
+		//g.drawString("" + Math.round(((mPercent[0]) * 100) * 100) / 100.0 + "%", (float) (xCenter + Math.cos(mPercent[0] * Math.PI) * 0.375 * diameter) - 20, (float) (yCenter - Math.sin(mPercent[0] * Math.PI) * 0.375 * diameter));
+		for(int j=0;j< mPercent.length;j++)
 		{
-			
-			g.drawString(""+Math.round((((prozent[j]-prozent[j-1]))*100)*100)/100.0+"%", (int)(xCenter+Math.cos((prozent[j-1]+(prozent[j]-prozent[j-1])*0.5)*360*Math.PI/180.0)*0.375*diameter)-20, (int)(yCenter-Math.sin((prozent[j-1]+(prozent[j]-prozent[j-1])*0.5)*360*Math.PI/180.0)*0.375*diameter));
+            double oldPercent = 0;
+            if(j  != 0)
+                oldPercent = mPercent[j-1];
+            String text = ""+Math.round((((mPercent[j]- oldPercent))*100)*100)/100.0+"%";
+            float x = (float)(xCenter+Math.cos((oldPercent+(mPercent[j]- oldPercent)*0.5)*360*Math.PI/180.0)*0.375*diameter)-20;
+            float y = (float)(yCenter-Math.sin((oldPercent+(mPercent[j]- oldPercent)*0.5)*360*Math.PI/180.0)*0.375*diameter);
+            FontMetrics fm = g.getFontMetrics();
+            float width = fm.stringWidth(text);
+            float height = fm.getHeight();
+            Color color = g.getColor();
+            g.setColor(new Color(0,0,0,0.5f));
+            g.fillRect(x-1,y-height+3,width+2,height);
+            g.setColor(color);
+			g.drawString(text,x ,y );
 		}
 		
 		g.setColor(oldColor);
@@ -106,5 +122,32 @@ public class PieChart implements Drawable {
     @Override
     public boolean isCritical() {
         return false;
+    }
+
+    @Override
+    public Color getColor() {
+        return mColors[0];
+    }
+
+    @Override
+    public String getName() {
+        return mName;
+    }
+
+    @Override
+    public boolean nameIsSet() {
+        return mNameIsSet;
+    }
+
+    public void setName(String name){
+        mName = name;
+        mNameIsSet = true;
+    }
+
+    public void setColors(Color[] colors){
+        mColors = colors;
+        mColorHelper = mColors.length;
+        if((mValues.length-1)%(mColors.length)==0)
+            mColorHelper = mColors.length-1;
     }
 }

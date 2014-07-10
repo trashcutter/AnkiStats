@@ -26,7 +26,7 @@ public class Graphics {
 
     public void drawLine(float x1, float y1, float x2, float y2){
         Style oldStyle = paint.getStyle();
-        paint.setStyle(Style.STROKE);
+        paint.setStyle(Style.FILL_AND_STROKE);
         canvas.drawLine(x1, y1, x2, y2, paint);
         paint.setStyle(oldStyle);
     }
@@ -40,7 +40,7 @@ public class Graphics {
     
     public void fillRect(float x, float y, float width, float height){
         Style oldStyle = paint.getStyle();
-        paint.setStyle(Style.FILL_AND_STROKE);
+        paint.setStyle(Style.FILL);
         canvas.drawRect(x, y, x+width, y+height, paint);
         paint.setStyle(oldStyle);
     }
@@ -72,13 +72,15 @@ public class Graphics {
     public void drawArc(float x, float y, float width, float height, float startAngle, float arcAngle){
         Style oldStyle = paint.getStyle();
         paint.setStyle(Style.STROKE);
-        canvas.drawCircle(x, y, width/2.0f, paint);
+        RectF rectF = new RectF(x,y,x+width,y+height);
+        canvas.drawArc(rectF,startAngle,arcAngle,true,paint);
         paint.setStyle(oldStyle);
     }
     public void fillArc(float x, float y, float width, float height, float startAngle, float arcAngle){
         Style oldStyle = paint.getStyle();
-        paint.setStyle(Style.FILL_AND_STROKE);
-        canvas.drawCircle(x, y, width/2.0f, paint);
+        paint.setStyle(Style.FILL);
+        RectF rectF = new RectF(x,y,x+width,y+height);
+        canvas.drawArc(rectF,-startAngle,-arcAngle,true,paint);
         paint.setStyle(oldStyle);
     }
     
@@ -87,7 +89,9 @@ public class Graphics {
         Xfermode mode  = paint.getXfermode();
         paint.setXfermode(new PorterDuffXfermode(Mode.SRC_OVER));
         //canvas.drawBitmap(image.getBitmap(), x, y, paint);
-        canvas.drawBitmap(image.getBitmap(), canvas.getClipBounds(), canvas.getClipBounds(), paint);
+        Bitmap bitmap = image.getBitmap();
+        bitmap.prepareToDraw();
+        canvas.drawBitmap(bitmap, canvas.getClipBounds(), canvas.getClipBounds(), paint);
         paint.setXfermode(mode);
     }
     
