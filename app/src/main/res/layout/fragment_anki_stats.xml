@@ -11,14 +11,20 @@
     <ImageView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/imageViewChart"
+        android:id="@+id/image_view_chart"
         style="@style/AppTheme"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:contentDescription=""
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_margin="0dp"/>
+        android:layout_margin="0dp"
+        android:visibility="visible"/>
+    <ProgressBar
+        android:id="@+id/progress_bar_stats"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:indeterminate="true" />
 
 
 </RelativeLayout>

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -244,6 +245,7 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         private ImageView mChart;
+        private ProgressBar mProgressBar;
         private int mHeight = 0;
         private int mWidth = 0;
         private ChartFragment mInstance = null;
@@ -278,8 +280,15 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
             //int sectionNumber = 0;
             System.err.println("sectionNumber: " + mSectionNumber);
             View rootView = inflater.inflate(R.layout.fragment_anki_stats, container, false);
-            mChart = (ImageView) rootView.findViewById(R.id.imageViewChart);
+            mChart = (ImageView) rootView.findViewById(R.id.image_view_chart);
+            if(mChart == null)
+                Log.d(AnkiStatsApplication.TAG, "mChart null!!!");
+            else
+                Log.d(AnkiStatsApplication.TAG, "mChart is not null!");
+            mProgressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar_stats);
 
+            mProgressBar.setVisibility(View.VISIBLE);
+            //mChart.setVisibility(View.GONE);
             createChart();
             mHeight = mChart.getMeasuredHeight();
             mWidth = mChart.getMeasuredWidth();
@@ -293,21 +302,21 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
 
         private void createChart(){
             if(mSectionNumber == 1) {
-                ((AnkiStatsApplication) getActivity().getApplication()).createForecastChart(mChart);
+                ((AnkiStatsApplication) getActivity().getApplication()).createForecastChart(mChart, mProgressBar);
             } else if(mSectionNumber == 2) {
-                ((AnkiStatsApplication) getActivity().getApplication()).createReviewCountChart(mChart);
+                ((AnkiStatsApplication) getActivity().getApplication()).createReviewCountChart(mChart, mProgressBar);
             } else if(mSectionNumber == 3) {
-                ((AnkiStatsApplication) getActivity().getApplication()).createReviewTimeChart(mChart);
+                ((AnkiStatsApplication) getActivity().getApplication()).createReviewTimeChart(mChart, mProgressBar);
             } else if(mSectionNumber == 4) {
-                ((AnkiStatsApplication) getActivity().getApplication()).createIntervalChart(mChart);
+                ((AnkiStatsApplication) getActivity().getApplication()).createIntervalChart(mChart, mProgressBar);
             } else if(mSectionNumber == 5) {
-                ((AnkiStatsApplication) getActivity().getApplication()).createBreakdownChart(mChart);
+                ((AnkiStatsApplication) getActivity().getApplication()).createBreakdownChart(mChart, mProgressBar);
             } else if(mSectionNumber == 6) {
-                ((AnkiStatsApplication) getActivity().getApplication()).createWeeklyBreakdownChart(mChart);
+                ((AnkiStatsApplication) getActivity().getApplication()).createWeeklyBreakdownChart(mChart, mProgressBar);
             } else if(mSectionNumber == 7) {
-                ((AnkiStatsApplication) getActivity().getApplication()).createAnswerButtonTask(mChart);
+                ((AnkiStatsApplication) getActivity().getApplication()).createAnswerButtonTask(mChart, mProgressBar);
             } else if(mSectionNumber == 8) {
-                ((AnkiStatsApplication) getActivity().getApplication()).createCardsTypesTask(mChart);
+                ((AnkiStatsApplication) getActivity().getApplication()).createCardsTypesTask(mChart, mProgressBar);
             }
         }
 
