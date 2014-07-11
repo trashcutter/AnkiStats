@@ -286,10 +286,6 @@ public class AnswerButton {
         mCumulative[2] = Utils.createCumulativeInPercent(mSeriesList[2], totals[1], badYoung);
         mCumulative[3] = Utils.createCumulativeInPercent(mSeriesList[3], totals[2], badMature);
 
-        if(type == 2){
-            System.err.println("TEst");
-        }
-
         mMaxElements = 15;      //bars are positioned from 1 to 14
         return list.size() > 0;
     }

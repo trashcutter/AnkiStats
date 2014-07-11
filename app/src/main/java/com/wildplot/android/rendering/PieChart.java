@@ -75,9 +75,9 @@ public class PieChart implements Drawable, Legendable {
 			g.fillArc(xMiddle, yMiddle, (int)diameter, (int)(diameter), currentAngle, nextAngle - currentAngle);
 			currentAngle = nextAngle;
 			nextAngle = (int)(360.0* mPercent[i+1]);
-			tmp = i+2;
+			tmp = i;
 		}
-		
+        tmp++;
 		//last one does need some corrections to fill a full circle:
 		g.setColor(mColors[tmp% mColorHelper]);
 		g.fillArc(xMiddle, yMiddle, diameter, diameter, currentAngle, 360 - currentAngle);

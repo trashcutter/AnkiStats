@@ -78,6 +78,19 @@ public class Utils {
         return cumulativeValues;
     }
 
+    public static double[][] createCumulative(double [][] nonCumulative, int startAtIndex){
+        double[][] cumulativeValues = new double[2][nonCumulative[0].length - startAtIndex];
+        cumulativeValues[0][0] = nonCumulative[0][startAtIndex];
+        cumulativeValues[1][0] = nonCumulative[1][startAtIndex];
+        for(int i = startAtIndex+1; i<nonCumulative[0].length; i++){
+            cumulativeValues[0][i- startAtIndex] = nonCumulative[0][i];
+            cumulativeValues[1][i- startAtIndex] = cumulativeValues[1][i-1- startAtIndex] + nonCumulative[1][i];
+
+        }
+
+        return cumulativeValues;
+    }
+
     public static double[] createCumulative(double [] nonCumulative){
         double[] cumulativeValues = new double[nonCumulative.length];
         cumulativeValues[0] = nonCumulative[0];

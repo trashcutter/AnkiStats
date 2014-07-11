@@ -18,6 +18,7 @@ package com.wildplot.android.ankistats;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.ImageView;
 import com.wildplot.android.rendering.*;
 import com.wildplot.android.rendering.graphics.wrapper.BufferedImage;
@@ -129,12 +130,13 @@ public class CardsTypes {
         ArrayList<double[]> list = new ArrayList<double[]>();
         double[] pieData;
         Cursor cur = null;
-        String query = "select\n" +
+        String query = "select " +
                 "sum(case when queue=2 and ivl >= 21 then 1 else 0 end), -- mtr\n" +
                 "sum(case when queue in (1,3) or (queue=2 and ivl < 21) then 1 else 0 end), -- yng/lrn\n" +
                 "sum(case when queue=0 then 1 else 0 end), -- new\n" +
                 "sum(case when queue<0 then 1 else 0 end) -- susp\n" +
                 "from cards where did in " + _limitWholeOnly();
+        Log.d(AnkiStatsApplication.TAG, "CardsTypes query: " + query);
 
         try {
             cur = mAnkiDb

@@ -284,8 +284,8 @@ public class PlotSheet implements Drawable {
         Rectangle field = g.getClipBounds();
 		this.currentScreen = screenNr;
         prepareRunnables();
-		Vector<DrawableDrawingRunnable> offFrameDrawables = new Vector<DrawableDrawingRunnable>();
-		Vector<DrawableDrawingRunnable> onFrameDrawables = new Vector<DrawableDrawingRunnable>();
+		Vector<Drawable> offFrameDrawables = new Vector<Drawable>();
+		Vector<Drawable> onFrameDrawables = new Vector<Drawable>();
 		BufferedImage bufferedFrameImage = new BufferedImage(field.width, field.height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D gFrame = bufferedFrameImage.createGraphics();
 		gFrame.setClip(field);
@@ -301,18 +301,14 @@ public class PlotSheet implements Drawable {
             g.setFontSize(fontSize);
             gFrame.setFontSize(fontSize);
         }
-		Thread[] threads = new Thread[this.screenParts.get(screenNr).getDrawables().size()]; 
 		int i = 0;
 		
 		if(this.screenParts.get(screenNr).getDrawables() != null && this.screenParts.get(screenNr).getDrawables().size() != 0) {
 			for(Drawable draw : this.screenParts.get(screenNr).getDrawables()) {
-				DrawableDrawingRunnable drawableDrawingRunnable = new DrawableDrawingRunnable(draw, field);
-				threads[i] = new Thread( drawableDrawingRunnable);
-				threads[i++].start();
 				if(!draw.isOnFrame()) {
-					offFrameDrawables.add(drawableDrawingRunnable);
+					offFrameDrawables.add(draw);
 				} else {
-					onFrameDrawables.add(drawableDrawingRunnable);
+					onFrameDrawables.add(draw);
 				}
 			}
 		}
@@ -403,22 +399,14 @@ public class PlotSheet implements Drawable {
 //			gFrame.setFont(oldFont);
 		}
 		gFrame.dispose();
-		
-		for(i=0; i<threads.length; i++ ){
-			try {
-				threads[i].join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		for(DrawableDrawingRunnable offFrameDrawing : offFrameDrawables){
-			((Graphics2D)g).drawImage(offFrameDrawing.getBufferedDrawableImage(), null, 0, 0);
+
+		for(Drawable offFrameDrawing : offFrameDrawables){
+            offFrameDrawing.paint(g);
+
 		}
 		((Graphics2D)g).drawImage(bufferedFrameImage, null, 0, 0);
-		for(DrawableDrawingRunnable onFrameDrawing : onFrameDrawables){
-			((Graphics2D)g).drawImage(onFrameDrawing.getBufferedDrawableImage(), null, 0, 0);
+		for(Drawable onFrameDrawing : onFrameDrawables){
+			onFrameDrawing.paint(g);
 		}
 		
 	}
@@ -648,68 +636,7 @@ public class PlotSheet implements Drawable {
 		this.isLogY = false;
 	}
 
-    private class DrawableDrawingRunnable implements Runnable {
 
-        private Drawable drawable;
-        private boolean hasFinished = false;
-        private boolean hasJoined = false;
-
-        private BufferedImage bufferedDrawableImage;
-        private BufferedImage bufferedOldDrawableImage = null;
-        private Rectangle field;
-
-        public DrawableDrawingRunnable(Drawable drawable, Rectangle field) {
-            super();
-            this.drawable = drawable;
-            this.field = field;
-
-        }
-
-
-        @Override
-        public void run() {
-            this.hasFinished = false;
-            bufferedDrawableImage = new BufferedImage(field.width, field.height, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g = bufferedDrawableImage.createGraphics();
-            g.setFontSize(fontSize);
-            g.setClip(field);
-            g.setColor(Color.BLACK);
-            drawable.paint(g);
-            g.dispose();
-            this.hasFinished = true;
-
-        }
-
-        public Drawable getDrawable() {
-            return drawable;
-        }
-
-        public boolean hasFinished(){
-            return hasFinished;
-        }
-        public boolean hasJoined(){
-            return hasJoined;
-        }
-        public BufferedImage getBufferedDrawableImage() {
-            return bufferedDrawableImage;
-        }
-
-
-        public BufferedImage getBufferedOldDrawableImage() {
-            return bufferedOldDrawableImage;
-        }
-
-
-        public void setBufferedOldDrawableImage(BufferedImage bufferedOldDrawableImage) {
-            this.bufferedOldDrawableImage = bufferedOldDrawableImage;
-        }
-
-        public boolean getIsCritical(){
-            return drawable.isCritical();
-        }
-
-
-    }
 
 	@Override
 	public void abortAndReset() {

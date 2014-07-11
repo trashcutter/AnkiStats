@@ -18,6 +18,7 @@ package com.wildplot.android.ankistats;
 
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.ImageView;
 import com.wildplot.android.rendering.*;
 import com.wildplot.android.rendering.graphics.wrapper.BufferedImage;
@@ -54,6 +55,9 @@ public class ReviewCount {
     private double[][] mSeriesList;
     private boolean mFoundRelearnCards;
     private double barThickness = 0.6;
+    private double mLastElement = 0;
+    private double mFirstElement = 0;
+    private int mZeroIndex = 0;
 
     public ReviewCount(AnkiDb ankiDb, ImageView imageView, CollectionData collectionData){
         mAnkiDb = ankiDb;
@@ -63,6 +67,24 @@ public class ReviewCount {
 
     public Bitmap renderChart(int type, boolean reps){
         calculateDone(type, reps);
+
+        int end = 0;
+        switch (mType){
+            case Utils.TYPE_MONTH:
+                end = -31;
+                break;
+            case Utils.TYPE_YEAR:
+                end = -52;
+                break;
+            default:
+            case Utils.TYPE_LIFE:
+                end = (int)mFirstElement;
+                break;
+
+        }
+        Log.d(AnkiStatsApplication.TAG, "MType of PreviewCount: " + mType);
+
+
         int height = mImageView.getMeasuredHeight();
         int width = mImageView.getMeasuredWidth();
 
@@ -82,14 +104,14 @@ public class ReviewCount {
         mFrameThickness = Math.round( FontHeigth * 4.0f);
         //System.out.println("frame thickness: " + mFrameThickness);
 
-        PlotSheet plotSheet = new PlotSheet(mSeriesList[0][0]-0.5, mSeriesList[0][mSeriesList[0].length-1] + 0.5, 0, mMaxCards*1.1);
+        PlotSheet plotSheet = new PlotSheet(end-0.5, 0 + 0.5, 0, mMaxCards*1.1);
         plotSheet.setFrameThickness(mFrameThickness);
 
         //no title because of tab title
         //plotSheet.setTitle(mImageView.getResources().getString(mTitle));
 
-        double xTics = ticsCalcX(targetPixelDistanceBetweenTics, rect);
-        double yTics = ticsCalcY(targetPixelDistanceBetweenTics, rect);
+        double xTics = ticsCalcX(targetPixelDistanceBetweenTics, rect, end, 0);
+        double yTics = ticsCalcY(targetPixelDistanceBetweenTics, rect, 0 , mMaxCards);
 
         XAxis xaxis = new XAxis(plotSheet, 0, xTics, xTics/2.0);
         YAxis yaxis = new YAxis(plotSheet, 0, yTics, yTics/2.0);
@@ -133,7 +155,7 @@ public class ReviewCount {
 
         }
 
-        PlotSheet hiddenPlotSheet = new PlotSheet(mSeriesList[0][0]-0.5, mSeriesList[0][mSeriesList[0].length-1] + 0.5, 0, maxCumulative*1.1);     //for second y-axis
+        PlotSheet hiddenPlotSheet = new PlotSheet(end-0.5, 0 + 0.5, 0, maxCumulative*1.1);     //for second y-axis
         hiddenPlotSheet.setFrameThickness(mFrameThickness);
 
         Lines[] lineses = new Lines[mSeriesList.length-1];
@@ -244,21 +266,25 @@ public class ReviewCount {
         }
         ArrayList<double[]> list = new ArrayList<double[]>();
         Cursor cur = null;
+        String query = "SELECT (cast((id/1000 - " + mCollectionData.getDayCutoff() + ") / 86400.0 AS INT))/"
+                + chunk + " AS day, " + "sum(CASE WHEN type = 0 THEN " + ti + " ELSE 0 END)"
+                + tf
+                + ", " // lrn
+                + "sum(CASE WHEN type = 1 AND lastIvl < 21 THEN " + ti + " ELSE 0 END)" + tf
+                + ", " // yng
+                + "sum(CASE WHEN type = 1 AND lastIvl >= 21 THEN " + ti + " ELSE 0 END)" + tf
+                + ", " // mtr
+                + "sum(CASE WHEN type = 2 THEN " + ti + " ELSE 0 END)" + tf + ", " // lapse
+                + "sum(CASE WHEN type = 3 THEN " + ti + " ELSE 0 END)" + tf // cram
+                + " FROM revlog " + lim + " GROUP BY day ORDER BY day";
+
+        Log.d(AnkiStatsApplication.TAG, "ReviewCount query: " + query);
+
         try {
             cur = mAnkiDb
                     .getDatabase()
                     .rawQuery(
-                            "SELECT (cast((id/1000 - " + mCollectionData.getDayCutoff() + ") / 86400.0 AS INT))/"
-                                    + chunk + " AS day, " + "sum(CASE WHEN type = 0 THEN " + ti + " ELSE 0 END)"
-                                    + tf
-                                    + ", " // lrn
-                                    + "sum(CASE WHEN type = 1 AND lastIvl < 21 THEN " + ti + " ELSE 0 END)" + tf
-                                    + ", " // yng
-                                    + "sum(CASE WHEN type = 1 AND lastIvl >= 21 THEN " + ti + " ELSE 0 END)" + tf
-                                    + ", " // mtr
-                                    + "sum(CASE WHEN type = 2 THEN " + ti + " ELSE 0 END)" + tf + ", " // lapse
-                                    + "sum(CASE WHEN type = 3 THEN " + ti + " ELSE 0 END)" + tf // cram
-                                    + " FROM revlog " + lim + " GROUP BY day ORDER BY day", null);
+                            query, null);
             while (cur.moveToNext()) {
                 list.add(new double[] { cur.getDouble(0), cur.getDouble(1), cur.getDouble(4), cur.getDouble(2),
                         cur.getDouble(3), cur.getDouble(5) });
@@ -299,14 +325,21 @@ public class ReviewCount {
 
             if(data[2] >= 0.999)
                 mFoundRelearnCards = true;
+            if(data[0] > mLastElement)
+                mLastElement = data[0];
+            if(data[0] < mFirstElement)
+                mFirstElement = data[0];
+            if(data[0] == 0){
+                mZeroIndex = i;
+            }
         }
         mMaxElements = list.size()-1;
         return list.size() > 0;
     }
 
 
-    public double ticsCalcX(int pixelDistance, Rectangle field){
-        double deltaRange =mMaxElements - 0;
+    public double ticsCalcX(int pixelDistance, Rectangle field, int start, int end){
+        double deltaRange = end - start;
         int ticlimit = field.width/pixelDistance;
         double tics = Math.pow(10, (int)Math.log10(deltaRange/ticlimit));
         while(2.0*(deltaRange/(tics)) <= ticlimit) {
@@ -318,8 +351,8 @@ public class ReviewCount {
         return tics;
     }
 
-    public double ticsCalcY(int pixelDistance, Rectangle field){
-        double deltaRange = mMaxCards - 0;
+    public double ticsCalcY(int pixelDistance, Rectangle field, int start, int end){
+        double deltaRange = end - start;
         int ticlimit = field.height/pixelDistance;
         double tics = Math.pow(10, (int)Math.log10(deltaRange/ticlimit));
         while(2.0*(deltaRange/(tics)) <= ticlimit) {

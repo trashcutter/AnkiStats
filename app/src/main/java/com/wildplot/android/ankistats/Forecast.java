@@ -54,6 +54,8 @@ public class Forecast {
     private int[] mAxisTitles;
     private double[][] mSeriesList;
     private double barThickness = 0.6;
+    private double mLastElement = 0;
+    private int mZeroIndex = 0;
 
     public Forecast(AnkiDb ankiDb, ImageView imageView, CollectionData collectionData){
         mAnkiDb = ankiDb;
@@ -84,14 +86,32 @@ public class Forecast {
         mFrameThickness = Math.round( FontHeigth * 4.0f);
         //System.out.println("frame thickness: " + mFrameThickness);
 
-        PlotSheet plotSheet = new PlotSheet(-0.5, mMaxElements + 0.5, 0, mMaxCards*1.1);
+        int end = 0;
+        switch (mType){
+            case Utils.TYPE_MONTH:
+                end = 31;
+                break;
+            case Utils.TYPE_YEAR:
+                end = 52;
+                break;
+            default:
+            case Utils.TYPE_LIFE:
+                end = (int)mLastElement;
+                break;
+
+        }
+
+        PlotSheet plotSheet = new PlotSheet(-0.5, end + 0.5, 0, mMaxCards*1.1);
+        double xTics = ticsCalcX(150, rect, 0, end);
+        double yTics = ticsCalcY(150, rect, 0, mMaxCards);
+
+
         plotSheet.setFrameThickness(mFrameThickness);
 
         //no title because of tab title
         //plotSheet.setTitle(mImageView.getResources().getString(mTitle));
 
-        double xTics = ticsCalcX(150, rect);
-        double yTics = ticsCalcY(150, rect);
+
 
         XAxis xaxis = new XAxis(plotSheet, 0, xTics, xTics/2.0);
         YAxis yaxis = new YAxis(plotSheet, 0, yTics, yTics/2.0);
@@ -119,8 +139,8 @@ public class Forecast {
         barGraphMature.setFillColor(new Color(mImageView.getResources().getColor(mColors[1])));
         barGraphMature.setName(mImageView.getResources().getString(mValueLabels[1]));
 
-        double[][] cumulative = Utils.createCumulative(bars);
-        PlotSheet hiddenPlotSheet = new PlotSheet(-0.5, mMaxElements + 0.5, 0, cumulative[1][cumulative[1].length-1]*1.1);     //for second y-axis
+        double[][] cumulative = Utils.createCumulative(bars, mZeroIndex);
+        PlotSheet hiddenPlotSheet = new PlotSheet(-0.5, end + 0.5, 0, cumulative[1][cumulative[1].length-1]*1.1);     //for second y-axis
 
         Lines lines = new Lines(hiddenPlotSheet,cumulative ,Color.black);
         lines.setSize(3f);
@@ -240,14 +260,19 @@ public class Forecast {
             mSeriesList[0][i] = data[0];
             mSeriesList[1][i] = data[1];
             mSeriesList[2][i] = data[2];
+            if(data[0] > mLastElement)
+                mLastElement = data[0];
+            if(data[0] == 0){
+                mZeroIndex = i;
+            }
         }
         mMaxElements = dues.size()-1;
         return dues.size() > 0;
     }
 
 
-    public double ticsCalcX(int pixelDistance, Rectangle field){
-        double deltaRange =mMaxElements - 0;
+    public double ticsCalcX(int pixelDistance, Rectangle field, int start, int end){
+        double deltaRange = end - start;
         int ticlimit = field.width/pixelDistance;
         double tics = Math.pow(10, (int)Math.log10(deltaRange/ticlimit));
         while(2.0*(deltaRange/(tics)) <= ticlimit) {
@@ -259,8 +284,8 @@ public class Forecast {
         return tics;
     }
 
-    public double ticsCalcY(int pixelDistance, Rectangle field){
-        double deltaRange = mMaxCards - 0;
+    public double ticsCalcY(int pixelDistance, Rectangle field, int start, int end){
+        double deltaRange = end - start;
         int ticlimit = field.height/pixelDistance;
         double tics = Math.pow(10, (int)Math.log10(deltaRange/ticlimit));
         while(2.0*(deltaRange/(tics)) <= ticlimit) {
