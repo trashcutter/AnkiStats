@@ -1,16 +1,16 @@
 package com.wildplot.android.ankistats;
 
+import java.io.File;
 import java.util.Locale;
 
-import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.*;
+import android.content.DialogInterface;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.*;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,6 +35,17 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AnkiStatsApplication ankiStatsApplication = (AnkiStatsApplication) getApplication();
+
+        String path =ankiStatsApplication.getStandardFilePath();
+        File file = new File(path);
+        if(file.exists() && file.isDirectory())
+            ankiStatsApplication.loadDb();
+        else{
+            createDialog(path).show();
+        }
+
+
         setContentView(R.layout.activity_anki_stats);
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -47,7 +58,7 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setOffscreenPageLimit(8);
 
         // When swiping between different sections, select the corresponding
         // tab. We can also use ActionBar.Tab#select() to do this if we have
@@ -71,27 +82,51 @@ public class AnkiStatsActivity extends Activity implements ActionBar.TabListener
                             .setTabListener(this));
         }
 
-//        ViewPager.OnPageChangeListener pageChangelistener = new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//
-//            }
-//
-//            @Override
-//            public void onPageSelected(int pageSelected) {
-//                ChartFragment currentFragment = (ChartFragment) mSectionsPagerAdapter.getItem(pageSelected);
-//                currentFragment.checkAndUpdate();
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//
-//            }
-//        };
 
-        //mViewPager.setOnPageChangeListener(pageChangelistener);
         float size = new TextView(this).getTextSize();
+
+
         ((AnkiStatsApplication)getApplication()).setmStandardTextSize(size);
+    }
+
+    public AlertDialog createDialog(final String path){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("could not find collection path. Please copy path from AnkiDroid: ")
+                .setTitle("Error: no Collection found");
+
+        final EditText input = new EditText(this);
+
+        builder.setView(input);
+        input.setText(path);
+        builder.setPositiveButton("retry", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                String newPath = input.getText().toString();
+                File newFile = new File(newPath);
+                if(newFile.exists() && newFile.isDirectory()) {
+                    ((AnkiStatsApplication) getApplication()).setFilePath(newPath);
+                    ((AnkiStatsApplication) getApplication()).loadDb();
+                    SectionsPagerAdapter sectionsPagerAdapter = AnkiStatsActivity.this.getSectionsPagerAdapter();
+                    if(sectionsPagerAdapter != null){
+                        sectionsPagerAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.d(AnkiStatsApplication.TAG, "no SectionsPagerAdapter available from Dialog.");
+                    }
+                }
+                else{
+                    AlertDialog alertDialog = createDialog(path);
+                    alertDialog.show();
+                }
+            }
+        });
+
+        builder.setNegativeButton("end", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+            }
+        });
+
+        return builder.create();
     }
 
     public ViewPager getViewPager(){

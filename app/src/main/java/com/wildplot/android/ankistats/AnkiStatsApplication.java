@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.ImageView;
 
 /**
@@ -24,16 +25,29 @@ public class AnkiStatsApplication extends Application {
     private CollectionData mCollectionData;
     private float mStandardTextSize = 10f;
     private int mStatType = Utils.TYPE_MONTH;
+    private String mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/AnkiDroid";
+    private String mCollectionFileName ="/collection.anki2";
 
     @Override
     public void onCreate() {
         super.onCreate();
-        OpenDatabaseTask openDatabaseTask = new OpenDatabaseTask();
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-        path += "/AnkiDroid/collection.anki2";
-        openDatabaseTask.execute(path);
-
         sInstance = this;
+    }
+
+    public String getStandardFilePath(){
+        return mFilePath;
+    }
+
+    public void setFilePath(String path){
+        mFilePath = path;
+    }
+
+    public void loadDb(){
+        mDatabaseLoaded = false;
+        OpenDatabaseTask openDatabaseTask = new OpenDatabaseTask();
+        openDatabaseTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mFilePath + mCollectionFileName);
+        //openDatabaseTask.execute(mFilePath + mCollectionFileName);
+        Log.d(TAG, "loading db");
     }
 
     public static AnkiStatsApplication getInstance() {
@@ -53,36 +67,36 @@ public class AnkiStatsApplication extends Application {
 
     public void createForecastChart(ImageView imageView){
         CreateForecastChartTask createForecastChartTask = new CreateForecastChartTask();
-        createForecastChartTask.execute(imageView);
+        createForecastChartTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageView);
     }
 
     public void createReviewCountChart(ImageView imageView){
         CreateReviewCountTask createReviewCountTask = new CreateReviewCountTask();
-        createReviewCountTask.execute(imageView);
+        createReviewCountTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageView);
     }
     public void createReviewTimeChart(ImageView imageView){
         CreateReviewTimeTask createReviewTimeTask = new CreateReviewTimeTask();
-        createReviewTimeTask.execute(imageView);
+        createReviewTimeTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageView);
     }
     public void createIntervalChart(ImageView imageView){
         CreateIntervalTask createIntervalTask = new CreateIntervalTask();
-        createIntervalTask.execute(imageView);
+        createIntervalTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageView);
     }
     public void createBreakdownChart(ImageView imageView){
         CreateBreakdownTask createBreakdownTask = new CreateBreakdownTask();
-        createBreakdownTask.execute(imageView);
+        createBreakdownTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageView);
     }
     public void createWeeklyBreakdownChart(ImageView imageView){
         CreateWeeklyBreakdownTask createWeeklyBreakdownTask = new CreateWeeklyBreakdownTask();
-        createWeeklyBreakdownTask.execute(imageView);
+        createWeeklyBreakdownTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageView);
     }
     public void createAnswerButtonTask(ImageView imageView){
         CreateAnswerButtonTask createAnswerButtonTask = new CreateAnswerButtonTask();
-        createAnswerButtonTask.execute(imageView);
+        createAnswerButtonTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageView);
     }
     public void createCardsTypesTask(ImageView imageView){
         CreateCardsTypesChart createCardsTypesChart = new CreateCardsTypesChart();
-        createCardsTypesChart.execute(imageView);
+        createCardsTypesChart.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, imageView);
     }
 
     private class CreateForecastChartTask extends AsyncTask<ImageView, Void, Bitmap>{
@@ -282,6 +296,7 @@ public class AnkiStatsApplication extends Application {
         protected void onPostExecute(AnkiDb ankiDb) {
             mDatabase = ankiDb;
             mDatabaseLoaded = true;
+            Log.d(TAG, "loading db finished");
         }
     }
 

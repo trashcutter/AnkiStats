@@ -164,7 +164,7 @@ public class WeeklyBreakdown {
 
     public boolean calculateBreakdown(int type) {
         mTitle = R.string.stats_weekly_breakdown;
-        mAxisTitles = new int[] { R.string.stats_time_of_day, R.string.stats_percentage_correct, R.string.stats_reviews };
+        mAxisTitles = new int[] { R.string.stats_day_of_week, R.string.stats_percentage_correct, R.string.stats_reviews };
 
         mValueLabels = new int[] { R.string.stats_percentage_correct, R.string.stats_answers};
         mColors = new int[] { R.color.stats_counts, R.color.stats_hours};
@@ -177,26 +177,14 @@ public class WeeklyBreakdown {
         }
 
         Calendar sd = GregorianCalendar.getInstance();
-        sd.setTimeInMillis(mCollectionData.getCrt() * 1000);
-        Calendar cal = Calendar.getInstance();
-        TimeZone tz = TimeZone.getDefault();
+        sd.setTimeInMillis(mCollectionData.getDayCutoff() * 1000);
 
-
-
-/* date formatter in local timezone */
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        sdf.setTimeZone(tz);
-
-/* print your timestamp and double check it's the date you expect */
-
-        String localTime = sdf.format(new Date(mCollectionData.getCrt() * 1000)); // I assume your timestamp is in seconds and you're converting to milliseconds?
 
         int pd = _periodDays();
         if(pd > 0){
             lim += " and id > "+ ((mCollectionData.getDayCutoff()-(86400*pd))*1000);
         }
 
-        int hourOfDay =sd.get(GregorianCalendar.HOUR_OF_DAY);
         long cutoff = mCollectionData.getDayCutoff();
         long cut = cutoff  - sd.get(Calendar.HOUR_OF_DAY)*3600;
 
